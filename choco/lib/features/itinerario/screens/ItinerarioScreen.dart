@@ -20,7 +20,12 @@ class _ItinerarioScreenState extends State<ItinerarioScreen> {
     @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Itinerario")),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text("Itinerario"),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        ),
       body: FutureBuilder<Itinerario>(
         future: itinerario,
         builder: (context, snapshot) {
