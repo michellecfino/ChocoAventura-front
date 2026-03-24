@@ -1,3 +1,4 @@
+import 'ItemItinerario.dart';
 class DiaItinerario {
   final DateTime fecha;
   final List<ItemItinerario> items;

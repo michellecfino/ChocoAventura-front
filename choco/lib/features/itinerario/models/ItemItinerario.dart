@@ -1,9 +1,10 @@
+import 'ActividadItinerario.dart';
 class ItemItinerario {
   final int id;
   final DateTime inicio;
   final DateTime fin;
   final String estado;
-  final Actividad actividad;
+  final ActividadItinerario actividad;
 
   ItemItinerario({
     required this.id,
@@ -19,7 +20,7 @@ class ItemItinerario {
       inicio: DateTime.parse(json['inicioProgramado']),
       fin: DateTime.parse(json['finProgramado']),
       estado: json['estado'],
-      actividad: Actividad.fromJson(json['actividad']),
+      actividad: ActividadItinerario.fromJson(json['actividad']),
     );
   }
 }

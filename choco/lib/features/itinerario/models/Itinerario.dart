@@ -1,3 +1,4 @@
+import 'DiaItinerario.dart';
 class Itinerario {
   final int id;
   final String nombre;
