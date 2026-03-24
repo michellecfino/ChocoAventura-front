@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:choco/features/itinerario/models/Itinerario.dart';
 import 'package:http/http.dart' as http;
 
 class ItinerarioService {

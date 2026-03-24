@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/DiaItinerario.dart';
 import 'package:choco/features/itinerario/models/ItemItinerario.dart';
-import 'package:choco/app/colors.dart';
 
 class CalendarDayView extends StatelessWidget {
   final DiaItinerario dia;
