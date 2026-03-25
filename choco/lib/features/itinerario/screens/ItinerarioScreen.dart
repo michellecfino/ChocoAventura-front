@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:choco/features/itinerario/models/Itinerario.dart'; 
 import 'package:choco/app/colors.dart';
-import 'package:choco/core/mock/itinerario_mock.dart';
 import 'package:choco/features/itinerario/widgets/calendar_view.dart';
 
 class ItinerarioScreen extends StatefulWidget {
