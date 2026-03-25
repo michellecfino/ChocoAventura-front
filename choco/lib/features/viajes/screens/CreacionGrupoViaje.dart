@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:choco/features/viajes/widgets/calendario.dart';
 
@@ -79,7 +80,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
             //  CIUDAD (GOOGLE)
             GooglePlaceAutoCompleteTextField(
               textEditingController: ciudadController,
-              googleAPIKey: "AIzaSyAK4aui_XKMFgZAEyzKB9cYo7JsYm2LHrY",
+              googleAPIKey: dotenv.get('GOOGLE_MAPS_API_KEY'),
 
               inputDecoration: const InputDecoration(
                 hintText: "Buscar ciudad",

@@ -22,7 +22,7 @@
               />
             <meta-data
               android:name="com.google.android.geo.API_KEY"
-              android:value=""
+              android:value=dotenv.get('GOOGLE_MAPS_API_KEY')
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
