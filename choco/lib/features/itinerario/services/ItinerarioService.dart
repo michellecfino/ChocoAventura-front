@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import '../models/Itinerario.dart';
 class ItinerarioService {
   final String baseUrl = "http://TU_BACKEND/api";
 

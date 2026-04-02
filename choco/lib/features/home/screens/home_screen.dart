@@ -15,13 +15,16 @@ class HomeScreen extends StatelessWidget {
             titulo: 'Empieza a organizar tu viaje',
             subtitulo: 'Explora destinos y actividades',
             onTap: () {
-              Navigator.pushNamed(context, '/login');
+              Navigator.pushNamed(context, '/explorar');
             },
           ),
           const SizedBox(height: 12),
-          const HomeActionCard(
+          HomeActionCard(
             titulo: 'Continúa organizando tus viajes',
             subtitulo: 'Tus viajes activos aparecerán aquí',
+            onTap: () {
+              Navigator.pushNamed(context, '/itinerario');
+            },
           ),
         ],
       ),
