@@ -58,7 +58,7 @@ class _ItinerarioScreenState extends State<ItinerarioScreen> {
               style: GoogleFonts.poppins( // Puedes probar también con .montserrat() o .caveat()
               fontSize: 24,
               fontWeight: FontWeight.w600,
-              color: Colors.black, // Asegúrate de que contraste con tu AppColors.primary
+              color: Colors.white, // Asegúrate de que contraste con tu AppColors.primary
               letterSpacing: 1.2,  // Le da un poco de respiro a las letras
               ),
               ),

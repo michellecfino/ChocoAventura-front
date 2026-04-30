@@ -84,8 +84,15 @@ Widget build(BuildContext context) {
         child: Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: colorEstado.withOpacity(0.8),
+            color: colorEstado.withOpacity(1.0),
             borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 2,
+                offset: const Offset(0, 1),
+              ),
+            ],
             border: Border(left: BorderSide(color: colorEstado, width: 3)),
           ),
           child: Text(
