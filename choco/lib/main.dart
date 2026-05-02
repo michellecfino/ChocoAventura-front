@@ -1,19 +1,34 @@
-import 'package:choco/features/viajes/screens/CreacionGrupoViaje.dart';
+import 'package:choco/app/app.dart';
+import 'package:choco/features/gastos/choco_opener.dart';
+import 'package:choco/features/gastos/widgets/choco_assistant_sheet.dart';
 import 'package:flutter/material.dart';
-import 'app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MaterialApp(home: const Prueba()));
+  await _cargarEnvOpcional();
+
+  setGlobalChocoOpener(
+    (ctx, service, onActualizado) => mostrarAsistenteGlobalChoco(
+      ctx,
+      service: service,
+      onActualizado: onActualizado,
+    ),
+  );
+
+  runApp(const ChocoAventuraApp());
 }
 
-class Prueba extends StatelessWidget {
-  const Prueba({super.key});
+Future<void> _cargarEnvOpcional() async {
+  try {
+    await dotenv.load(fileName: 'assets/.env');
+    return;
+  } catch (_) {}
 
-  @override
-  Widget build(BuildContext context) {
-    return CreacionGrupoViaje();
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (_) {
+    // Sin archivo .env la app sigue funcionando (mapas y claves opcionales).
   }
 }

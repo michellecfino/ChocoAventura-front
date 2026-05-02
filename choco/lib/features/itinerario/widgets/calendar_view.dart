@@ -1,6 +1,7 @@
+import 'package:choco/app/colors.dart';
+import 'package:choco/features/itinerario/models/ItemItinerario.dart';
 import 'package:flutter/material.dart';
 import '../models/DiaItinerario.dart';
-import 'package:choco/features/itinerario/models/ItemItinerario.dart';
 
 class CalendarDayView extends StatelessWidget {
   final DiaItinerario dia;
@@ -19,7 +20,7 @@ Widget build(BuildContext context) {
         minScale: 1.0, 
         maxScale: 4.0,
         child: Container(
-          color: Colors.white,
+          color: AppColors.surface.withValues(alpha: 0.98),
  
           height: constraints.maxHeight,
           width: constraints.maxWidth,
@@ -42,7 +43,7 @@ Widget build(BuildContext context) {
         height: hHeight,
         decoration: BoxDecoration(
           border: Border(
-            top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
+            top: BorderSide(color: AppColors.text.withValues(alpha: 0.12), width: 1),
           ),
         ),
         child: Row(
@@ -51,7 +52,7 @@ Widget build(BuildContext context) {
                 width: 45,
                 child: Text(
                   "${hour.toString().padLeft(2, '0')}:00",
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  style: TextStyle(fontSize: 10, color: AppColors.text.withValues(alpha: 0.45)),
                 ),
               ),
               const Expanded(child: Divider(height: 1, color: Colors.black12)),
@@ -72,7 +73,7 @@ Widget build(BuildContext context) {
     final top = (startMinutes * hHeight) / 60;
     final height = (duration * hHeight) / 60;
 
-    final colorEstado = getEstadoColor(item.estado);
+    final colorEstado = _eventStyle(item.estado);
 
     return Positioned(
       top: top,
@@ -82,45 +83,66 @@ Widget build(BuildContext context) {
       child: GestureDetector(
         onTap: () => _showDetail(context, item),
         child: Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
-            color: colorEstado.withOpacity(1.0),
-            borderRadius: BorderRadius.circular(4),
+            color: colorEstado.bg,
+            borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 2,
-                offset: const Offset(0, 1),
+                color: AppColors.text.withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               ),
             ],
-            border: Border(left: BorderSide(color: colorEstado, width: 3)),
+            border: Border.all(color: colorEstado.border),
           ),
           child: Text(
             item.actividad.nombre,
-            style: const TextStyle(
-              color: Colors.white, 
-              fontSize: 9, 
-              fontWeight: FontWeight.bold
+            style: TextStyle(
+              color: colorEstado.fg,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
             ),
             overflow: TextOverflow.ellipsis,
+            maxLines: 3,
           ),
         ),
       ),
     );
   }
 
-  Color getEstadoColor(String estado) {
+  _EventStyle _eventStyle(String estado) {
     switch (estado.toUpperCase()) {
-      case 'COMPLETADA': return Colors.green;
-      case 'EN_CURSO': return Colors.blue;
-      case 'PROGRAMADA': return Colors.orange;
-      default: return Colors.grey;
+      case 'COMPLETADA':
+        return _EventStyle(
+          bg: AppColors.primary.withValues(alpha: 0.88),
+          fg: Colors.white,
+          border: AppColors.primary,
+        );
+      case 'EN_CURSO':
+        return _EventStyle(
+          bg: AppColors.accent.withValues(alpha: 0.38),
+          fg: AppColors.text,
+          border: AppColors.accent.withValues(alpha: 0.65),
+        );
+      case 'PROGRAMADA':
+        return _EventStyle(
+          bg: Colors.white,
+          fg: AppColors.text,
+          border: AppColors.primary.withValues(alpha: 0.35),
+        );
+      default:
+        return _EventStyle(
+          bg: AppColors.surfaceMuted,
+          fg: AppColors.text.withValues(alpha: 0.75),
+          border: AppColors.outlineSoft,
+        );
     }
   }
 
   void _showDetail(BuildContext context, ItemItinerario item) {
   final actividad = item.actividad;
-  final colorEstado = getEstadoColor(item.estado);
+  final colorEstado = _eventStyle(item.estado);
 
   showModalBottomSheet(
     context: context,
@@ -174,7 +196,7 @@ Widget build(BuildContext context) {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.2),
+                              color: Colors.amber.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -196,13 +218,13 @@ Widget build(BuildContext context) {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: colorEstado.withOpacity(0.1),
+                        color: colorEstado.bg.withValues(alpha: 0.25),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorEstado),
+                        border: Border.all(color: colorEstado.border),
                       ),
                       child: Text(
                         item.estado,
-                        style: TextStyle(color: colorEstado, fontWeight: FontWeight.bold, fontSize: 12),
+                        style: TextStyle(color: colorEstado.fg, fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -277,4 +299,16 @@ Widget build(BuildContext context) {
     },
   );
   }
+}
+
+class _EventStyle {
+  final Color bg;
+  final Color fg;
+  final Color border;
+
+  _EventStyle({
+    required this.bg,
+    required this.fg,
+    required this.border,
+  });
 }
