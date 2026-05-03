@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSSpeechRecognitionUsageDescription</key>
+    <string>ChocoAventuras necesita reconocer tu voz para registrar gastos y crear viajes.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>ChocoAventuras necesita acceso al micrófono para escucharte.</string>
 </dict>
 </plist>
