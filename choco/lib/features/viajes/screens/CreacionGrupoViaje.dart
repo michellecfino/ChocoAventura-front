@@ -4,7 +4,10 @@ import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:choco/features/viajes/widgets/calendario.dart';
 
 class CreacionGrupoViaje extends StatefulWidget {
-  const CreacionGrupoViaje({super.key});
+  // 1. NUEVO: Variable para recibir los datos del Asistente
+  final Map<String, dynamic>? datosAsistente;
+
+  const CreacionGrupoViaje({super.key, this.datosAsistente});
 
   @override
   State<CreacionGrupoViaje> createState() => _CreacionGrupoViajeState();
@@ -13,10 +16,9 @@ class CreacionGrupoViaje extends StatefulWidget {
 class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
   final _formKey = GlobalKey<FormState>();
 
-  //  Datos
+  // Datos
   String? nombre;
   String? descripcion;
-
   String? ciudad;
   String? pais;
   double? lat;
@@ -26,6 +28,48 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
   DateTime? fechaFin;
   TimeOfDay? horaLlegada;
   TimeOfDay? horaSalida;
+  TimeOfDay? horaAlmuerzo;
+  TimeOfDay? horaInicio;
+  int? tiempoAlmuerzo;
+
+  // 2. NUEVO: Controladores para pre-llenar los campos de texto
+  final nombreController = TextEditingController();
+  final descripcionController = TextEditingController();
+  final ciudadController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 3. NUEVO: Lógica para leer el JSON y pre-llenar el formulario
+    if (widget.datosAsistente != null) {
+      final datos = widget.datosAsistente!;
+
+      if (datos['destination'] != null) {
+        ciudadController.text = datos['destination'].toString();
+        ciudad = datos['destination'].toString(); // Guardamos en la variable también
+      }
+      
+      if (datos['tripName'] != null) {
+        nombreController.text = datos['tripName'].toString();
+        nombre = datos['tripName'].toString();
+      }
+
+      if (datos['description'] != null) {
+        descripcionController.text = datos['description'].toString();
+        descripcion = datos['description'].toString();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Es buena práctica limpiar los controladores de memoria al cerrar la vista
+    nombreController.dispose();
+    descripcionController.dispose();
+    ciudadController.dispose();
+    super.dispose();
+  }
 
   List<TimeOfDay> generarHoras() {
     return List.generate(24, (index) {
@@ -37,13 +81,6 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
     return DateTime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute);
   }
 
-  TimeOfDay? horaAlmuerzo;
-  TimeOfDay? horaInicio;
-
-  int? tiempoAlmuerzo;
-
-  final ciudadController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,8 +90,9 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            //  Nombre
+            // Nombre
             TextFormField(
+              controller: nombreController, // Añadimos el controlador
               decoration: const InputDecoration(
                 labelText: "Nombre del grupo",
                 border: OutlineInputBorder(),
@@ -65,8 +103,9 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 16),
 
-            //  Descripción
+            // Descripción
             TextFormField(
+              controller: descripcionController, // Añadimos el controlador
               decoration: const InputDecoration(
                 labelText: "Descripción",
                 border: OutlineInputBorder(),
@@ -77,32 +116,25 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 16),
 
-            //  CIUDAD (GOOGLE)
+            // CIUDAD (GOOGLE)
             GooglePlaceAutoCompleteTextField(
               textEditingController: ciudadController,
               googleAPIKey: dotenv.get('GOOGLE_MAPS_API_KEY'),
-
               inputDecoration: const InputDecoration(
                 hintText: "Buscar ciudad",
                 border: OutlineInputBorder(),
               ),
-
               debounceTime: 800,
               isLatLngRequired: true,
-
               getPlaceDetailWithLatLng: (prediction) {
                 lat = double.tryParse(prediction.lat ?? "");
                 lng = double.tryParse(prediction.lng ?? "");
               },
-
               itemClick: (prediction) {
                 ciudadController.text = prediction.description ?? "";
-
                 final partes = (prediction.description ?? "").split(",");
-
                 ciudad = partes.first.trim();
                 pais = partes.last.trim();
-
                 setState(() {});
               },
             ),
@@ -116,7 +148,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 20),
 
-            //  FECHAS
+            // FECHAS
             DateRangePicker(
               onDateSelected: (start, end) {
                 fechaInicio = start;
@@ -126,9 +158,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 20),
 
-            SizedBox(height: 20),
-
-            //  HORA LLEGADA
+            // HORA LLEGADA
             DropdownButtonFormField<TimeOfDay>(
               decoration: const InputDecoration(
                 labelText: "Hora de llegada",
@@ -143,9 +173,9 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
               onChanged: (value) => setState(() => horaLlegada = value),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            //  HORA SALIDA
+            // HORA SALIDA
             DropdownButtonFormField<TimeOfDay>(
               decoration: const InputDecoration(
                 labelText: "Hora de salida",
@@ -160,9 +190,9 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
               onChanged: (value) => setState(() => horaSalida = value),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            //  HORA ALMUERZO
+            // HORA ALMUERZO
             DropdownButtonFormField<TimeOfDay>(
               decoration: const InputDecoration(
                 labelText: "Hora de almuerzo",
@@ -180,7 +210,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 16),
 
-            //  HORA INICIO ACTIVIDADES
+            // HORA INICIO ACTIVIDADES
             DropdownButtonFormField<TimeOfDay>(
               decoration: const InputDecoration(
                 labelText: "Inicio de actividades",
@@ -198,7 +228,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 16),
 
-            //  DURACIÓN ALMUERZO
+            // DURACIÓN ALMUERZO
             DropdownButtonFormField<int>(
               decoration: const InputDecoration(
                 labelText: "Duración almuerzo",
@@ -221,23 +251,16 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 24),
 
-            //  BOTÓN
+            // BOTÓN
             ElevatedButton(
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
 
-                if (ciudad == null || pais == null) {
+                if (ciudad == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Selecciona una ciudad válida"),
                     ),
-                  );
-                  return;
-                }
-
-                if (fechaInicio == null || fechaFin == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Selecciona fechas")),
                   );
                   return;
                 }
@@ -276,8 +299,8 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
                 print(horaAlmuerzo);
 
                 final dto = {
-                  "nombre": nombre,
-                  "descripcion": descripcion,
+                  "nombre": nombreController.text, // Modificado para usar el controller
+                  "descripcion": descripcionController.text, // Modificado para usar el controller
                   "nombreCiudad": ciudad,
                   "paisCiudad": pais,
                   "latCiudad": lat,

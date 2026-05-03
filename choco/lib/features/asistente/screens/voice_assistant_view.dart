@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; // IMPORTANTE: Necesario para formatear el JSON
+import 'dart:convert';
 import '../services/voice_assistant_service.dart';
+import 'package:choco/features/viajes/screens/CreacionGrupoViaje.dart';
 
 class VoiceAssistantView extends StatefulWidget {
   final String apiKey;
@@ -30,6 +31,28 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
     await _voiceService.initialize();
   }
 
+  // --- NUEVA FUNCIÓN AÑADIDA ---
+  void _manejarNavegacion(Map<String, dynamic>? jsonResult) {
+    if (jsonResult == null) return;
+
+    if (jsonResult['intent'] == 'CREATE_TRIP') {
+      // Extraemos el bloque "data" de forma segura
+      final tripData = jsonResult['data'] as Map<String, dynamic>? ?? {};
+
+      // Navegamos a la pantalla de crear viaje pasando los datos
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CreacionGrupoViaje(
+            datosAsistente: tripData, 
+          ),
+        ),
+      );
+    } else if (jsonResult['intent'] == 'ADD_EXPENSE') {
+      print('Navegar a Agregar Gasto (Próximo paso)');
+    }
+  }
+
   Future<void> _toggleListening() async {
     if (_isListening) {
       // Parada manual (si el usuario presiona el botón rojo antes de que termine solo)
@@ -47,6 +70,9 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
           _extractedData = result;
           _isProcessing = false;
         });
+        
+        // Llamamos a la navegación aquí
+        _manejarNavegacion(result);
       }
     } else {
       // Iniciar a escuchar
@@ -58,20 +84,23 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
       
       await _voiceService.startListening(
         onResult: (text) async {
-          // Tu servicio ya nos entrega el texto cuando detecta el final (finalResult)
+          // El servicio nos entrega el texto cuando detecta el final
           setState(() {
             _transcript = text;
             _isListening = false; // Apagamos el micrófono rojo
             _isProcessing = true; // Encendemos el cargador del JSON
           });
 
-          // Llamamos a Gemini automáticamente sin necesidad de presionar un botón
+          // Llamamos a Groq/Gemini automáticamente
           final result = await _voiceService.processTranscript(text);
           
           setState(() {
             _extractedData = result;
             _isProcessing = false;
           });
+
+          // Llamamos a la navegación de forma automática
+          _manejarNavegacion(result);
         },
       );
     }
@@ -122,7 +151,6 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
                     ? const Center(child: CircularProgressIndicator())
                     : SingleChildScrollView(
                         child: Text(
-                          // Aquí le damos el formato bonito al JSON
                           _extractedData != null 
                               ? const JsonEncoder.withIndent('  ').convert(_extractedData) 
                               : 'Esperando datos...',
