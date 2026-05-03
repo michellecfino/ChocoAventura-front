@@ -36,10 +36,8 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
     if (jsonResult == null) return;
 
     if (jsonResult['intent'] == 'CREATE_TRIP') {
-      // Extraemos el bloque "data" de forma segura
       final tripData = jsonResult['data'] as Map<String, dynamic>? ?? {};
 
-      // Navegamos a la pantalla de crear viaje pasando los datos
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -49,7 +47,17 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
         ),
       );
     } else if (jsonResult['intent'] == 'ADD_EXPENSE') {
-      print('Navegar a Agregar Gasto (Próximo paso)');
+      // 1. Imprimimos en consola para confirmación técnica
+      print('Intención detectada: ADD_EXPENSE. Navegación en pausa.');
+
+      // 2. Mostramos un aviso visual en la aplicación sin romper el flujo
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Función de agregar gastos en construcción..."),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 
