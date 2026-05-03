@@ -1,46 +1,13 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 
 class VoiceAssistantService {
   final SpeechToText _speechToText = SpeechToText();
-  late final GenerativeModel _model;
+  final String apiKey;
   bool _isInitialized = false;
 
-  VoiceAssistantService({required String apiKey}) {
-    _model = GenerativeModel(
-      model: 'gemini-2.0-flash',
-      apiKey: apiKey,
-      generationConfig: GenerationConfig(
-        responseMimeType: 'application/json',
-      ),
-      systemInstruction: Content.system('''
-        Actúas como un motor de extracción de entidades (NER). Tu única salida debe ser un objeto JSON válido. No incluyas saludos, explicaciones ni formato markdown de bloques de código.
-
-        Clasifica la entrada de voz en uno de dos intents: "CREATE_TRIP" o "ADD_EXPENSE". Si no corresponde a ninguno, usa "UNKNOWN".
-        Extrae los datos basándote en esta estructura y reglas:
-
-        Estructura JSON esperada:
-        {
-          "intent": "CREATE_TRIP" | "ADD_EXPENSE" | "UNKNOWN",
-          "data": {
-            "tripName": string | null,
-            "destination": string | null,
-            "dateRange": string | null,
-            "amount": number | null, 
-            "description": string | null,
-            "payer": string | null,
-            "participants": array de strings | null 
-          }
-        }
-
-        Reglas de extracción:
-        - Para CREATE_TRIP: Busca Nombre del viaje, Destino y Rango de fechas.
-        - Para ADD_EXPENSE: Busca Monto (conviértelo a un número entero, ej. "45 mil" -> 45000), Descripción (motivo del gasto), Quién pagó (payer) y Participantes. Si el gasto es para todos, el array de participants debe ser ["ALL"].
-        - Si un dato no se menciona en la entrada, su valor debe ser estrictamente null.
-      '''),
-    );
-  }
+  VoiceAssistantService({required this.apiKey});
 
   Future<void> initialize() async {
     if (!_isInitialized) {
@@ -71,15 +38,52 @@ class VoiceAssistantService {
   }
 
   Future<Map<String, dynamic>?> processTranscript(String transcript) async {
-    try {
-      final response = await _model.generateContent([Content.text(transcript)]);
-      
-      if (response.text != null) {
-        return jsonDecode(response.text!); 
+    // URL de Groq (Si usas OpenAI, la URL es https://api.openai.com/v1/chat/completions)
+    final url = Uri.parse('https://api.groq.com/openai/v1/chat/completions');
+
+    final systemPrompt = '''
+      Actúas como un motor de extracción de entidades (NER). Tu única salida debe ser un objeto JSON válido.
+      Clasifica la entrada en "CREATE_TRIP" o "ADD_EXPENSE".
+      Estructura esperada:
+      {
+        "intent": "CREATE_TRIP",
+        "data": {
+          "destination": "string",
+          "budget": 123
+        }
       }
-      return null;
+      Si un dato no está, usa null.
+    ''';
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'model': 'llama-3.1-8b-instant', 
+          'response_format': {'type': 'json_object'},
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': transcript}
+          ],
+          'temperature': 0.1, // Temperatura baja para respuestas estructuradas
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+        // Groq/OpenAI devuelven el texto dentro de choices[0].message.content
+        final contentString = jsonResponse['choices'][0]['message']['content'];
+        return jsonDecode(contentString);
+      } else {
+        print('Error en la API: ${response.statusCode} - ${response.body}');
+        return null;
+      }
     } catch (e) {
-      print('Error procesando NLP con Gemini: $e');
+      print('Error procesando NLP: $e');
       return null;
     }
   }
