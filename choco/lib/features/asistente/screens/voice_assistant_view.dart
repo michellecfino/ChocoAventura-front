@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'voice_assistant_service.dart'; // Importa el servicio de la respuesta anterior
+import '../services/voice_assistant_service.dart';
 
 class VoiceAssistantView extends StatefulWidget {
   final String apiKey;
@@ -86,7 +86,7 @@ class _VoiceAssistantViewState extends State<VoiceAssistantView> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
-              minHeight: 100,
+              constraints: const BoxConstraints(minHeight: 100),
               child: Text(
                 _transcript.isEmpty ? 'Presiona el micrófono y habla...' : _transcript,
                 style: const TextStyle(fontSize: 16),

@@ -1,5 +1,5 @@
 import 'package:choco/features/viajes/screens/CreacionGrupoViaje.dart';
-import 'package:choco/features/voice_assistant/screens/voice_assistant_view.dart'; 
+import 'package:choco/features/asistente/screens/voice_assistant_view.dart';
 import 'package:flutter/material.dart';
 import 'app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -26,8 +26,8 @@ class Prueba extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const VoiceAssistantView(
-                apiKey: dotenv.get('AIzaSyBR-3AWpjm0uSGx4BymiKTmbXFHYcUOOoE'),
+              builder: (context) =>  VoiceAssistantView(
+                apiKey: dotenv.get('GEMINI_API_KEY'),
               ),
             ),
           );
