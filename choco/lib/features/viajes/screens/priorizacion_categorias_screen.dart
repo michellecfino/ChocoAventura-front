@@ -133,6 +133,7 @@ class _PriorizacionCategoriasScreenState extends State<PriorizacionCategoriasScr
                     )
                   : ReorderableListView.builder(
                       padding: EdgeInsets.zero,
+                      buildDefaultDragHandles: false,
                       itemCount: _orden.length,
                       onReorder: (oldI, newI) {
                         setState(() {
@@ -156,14 +157,17 @@ class _PriorizacionCategoriasScreenState extends State<PriorizacionCategoriasScr
                               child: Text('${i + 1}', style: AppFonts.label(14, weight: FontWeight.w900)),
                             ),
                             title: Text(o, style: AppFonts.body(15, weight: FontWeight.w700)),
-                            trailing: Row(
+                              trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.close_rounded),
                                   onPressed: () => _quitar(o),
                                 ),
-                                const Icon(Icons.drag_handle_rounded),
+                                ReorderableDragStartListener(
+                                  index: i,
+                                  child: const Icon(Icons.drag_handle_rounded),
+                                ),
                               ],
                             ),
                           ),
