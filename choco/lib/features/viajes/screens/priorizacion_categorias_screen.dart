@@ -103,13 +103,7 @@ class _PriorizacionCategoriasScreenState extends State<PriorizacionCategoriasScr
                   selected: ya,
                   onSelected: lleno
                       ? null
-                      : (sel) {
-                          if (sel) {
-                            _agregar(o);
-                          } else {
-                            _quitar(o);
-                          }
-                        },
+                      : (_) => ya ? _quitar(o) : _agregar(o),
                 );
               }).toList(),
             ),
@@ -166,7 +160,14 @@ class _PriorizacionCategoriasScreenState extends State<PriorizacionCategoriasScr
                                 ),
                                 ReorderableDragStartListener(
                                   index: i,
-                                  child: const Icon(Icons.drag_handle_rounded),
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.grab,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                                      child: Icon(Icons.drag_handle_rounded,
+                                          color: AppColors.text.withValues(alpha: 0.55)),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
