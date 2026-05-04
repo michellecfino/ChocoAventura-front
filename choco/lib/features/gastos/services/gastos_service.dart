@@ -26,7 +26,8 @@ class GastosService {
   final List<ViajeFinancieroResumen> _mockViajes = [
     ViajeFinancieroResumen(
       idViaje: '1',
-      nombreViaje: 'Cartagena',
+      nombreViaje: 'Parche costeño',
+      destinoKey: 'cartagena',
       estado: EstadoViajeFinanciero.teDeben,
       tuDebes: 0,
       teDeben: 50000,
@@ -36,7 +37,8 @@ class GastosService {
     ),
     ViajeFinancieroResumen(
       idViaje: '2',
-      nombreViaje: 'Medellín',
+      nombreViaje: 'Paisa weekend',
+      destinoKey: 'medellin',
       estado: EstadoViajeFinanciero.debesPagar,
       tuDebes: 45000,
       teDeben: 0,
@@ -46,7 +48,8 @@ class GastosService {
     ),
     ViajeFinancieroResumen(
       idViaje: '3',
-      nombreViaje: 'Eje Cafetero',
+      nombreViaje: 'Capital cultural',
+      destinoKey: 'bogota',
       estado: EstadoViajeFinanciero.saldado,
       tuDebes: 0,
       teDeben: 0,
@@ -56,12 +59,35 @@ class GastosService {
     ),
     ViajeFinancieroResumen(
       idViaje: '4',
-      nombreViaje: 'Santa Marta',
+      nombreViaje: 'Selva y río',
+      destinoKey: 'amazonas',
       estado: EstadoViajeFinanciero.pendiente,
       tuDebes: 12000,
       teDeben: 8000,
       hasGastado: 95000,
       presupuesto: 300000,
+      perfilId: '1',
+    ),
+    ViajeFinancieroResumen(
+      idViaje: '5',
+      nombreViaje: 'Salsa y sabor',
+      destinoKey: 'cali',
+      estado: EstadoViajeFinanciero.pendiente,
+      tuDebes: 8000,
+      teDeben: 0,
+      hasGastado: 120000,
+      presupuesto: 350000,
+      perfilId: '1',
+    ),
+    ViajeFinancieroResumen(
+      idViaje: '6',
+      nombreViaje: 'Café y cerros',
+      destinoKey: 'medellin',
+      estado: EstadoViajeFinanciero.saldado,
+      tuDebes: 0,
+      teDeben: 0,
+      hasGastado: 0,
+      presupuesto: 400000,
       perfilId: '1',
     ),
   ];
@@ -119,12 +145,11 @@ class GastosService {
     final restante = (presupuesto - gastado).clamp(0.0, presupuesto).toDouble();
 
     final Map<String, double> cats = {
-      'Comida': gastado * 0.35,
-      'Transporte': gastado * 0.2,
-      'Actividades': gastado * 0.25,
-      'Hospedaje': gastado * 0.12,
-      'Compras': gastado * 0.05,
-      'Otros': gastado * 0.03,
+      'Comida': gastado * 0.38,
+      'Transporte': gastado * 0.22,
+      'Actividades': gastado * 0.26,
+      'Hospedaje': gastado * 0.14,
+      'Otros': gastado * 0.08,
     };
 
     final List<PersonaMonto> tu = v.tuDebes > 0
@@ -232,6 +257,7 @@ class GastosService {
     _mockViajes[idx] = ViajeFinancieroResumen(
       idViaje: ant.idViaje,
       nombreViaje: ant.nombreViaje,
+      destinoKey: ant.destinoKey,
       estado: ant.estado,
       tuDebes: ant.tuDebes,
       teDeben: ant.teDeben,

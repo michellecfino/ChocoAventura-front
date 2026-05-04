@@ -3,8 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'colors.dart';
 
-/// **Fredoka** para títulos (personalidad, gamificación suave).
-/// **Nunito** para cuerpo y UI (legible, amigable).
+/// **Fredoka** (títulos) + **Nunito** (cuerpo): misma línea que “Iniciar sesión” / AppBar — cálida y redondeada.
 abstract final class AppFonts {
   static TextStyle display(double size, {FontWeight weight = FontWeight.w700}) =>
       GoogleFonts.fredoka(fontSize: size, fontWeight: weight, color: AppColors.text, height: 1.15);

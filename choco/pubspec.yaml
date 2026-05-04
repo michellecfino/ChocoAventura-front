@@ -14,8 +14,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
+# In Windows, build-name is used as the major, minor, and patch parts of the
+# product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
 environment:
@@ -25,10 +25,12 @@ environment:
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
 # dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
+# the latest version available on pub.dev. To see which of your dependencies
+# have newer versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
   google_places_flutter: ^2.0.6
   flutter_dotenv: ^5.1.0
@@ -59,14 +61,30 @@ dev_dependencies:
 flutter:
 
   # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
+  # included with your application, so you can use the icons in
   # the material Icons class.
   uses-material-design: true
 
+  # Convención única: carpeta raíz del proyecto `assets/` (NO `lib/assets/`).
+  # En código: Image.asset('assets/destinos/cali/f11.jpg'), etc.
   assets:
     - assets/.env
     - assets/choco/
-    - lib/assets/
+    - assets/destinos/
+    - assets/destinos/amazonas/
+    - assets/destinos/bogota/
+    - assets/destinos/cali/
+    - assets/destinos/cartagena/
+    - assets/destinos/medellin/
+    - assets/actividades/
+    - assets/actividades/amazonas/
+    - assets/actividades/bogota/
+    - assets/actividades/cali/
+    - assets/actividades/cartagena/
+    - assets/actividades/medellin/
+    - assets/perfiles/
+    - assets/perfiles/hombre/
+    - assets/perfiles/mujer/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

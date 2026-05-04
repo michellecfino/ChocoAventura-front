@@ -1,0 +1,380 @@
+{
+  "Bogota::Tour gastronómico por La Candelaria": {
+    "provider": "pixabay",
+    "score": 225,
+    "url": "https://pixabay.com/get/gbb20c5ab056031d5026e794f5a25fe330b89165f8c702ee5b75570f508d3a0ec48c8b99e9fbb311aad08275f3ced66b0_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/bogota-cundinamarca-colombia-54432/",
+    "texto": "bogota, cundinamarca, colombia, colonial house, home, street, candelaria, bogota, bogota, bogota, bogota, bogota"
+  },
+  "Bogota::Clase de cocina colombiana": {
+    "provider": "pixabay",
+    "score": 94,
+    "url": "https://pixabay.com/get/g067a4571b2cf62c28166e628a6e7a2d8abe5b310675a16bca669d1a44edaadf218c4437cb69f04f7abdbbce19aac2082e33b4272cf5e0a2e681a487f3f9167af_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/cook-cooking-class-meal-tasty-722738/",
+    "texto": "cook, cooking class, meal, tasty, cooking class, cooking class, cooking class, cooking class, cooking class"
+  },
+  "Bogota::Recorrido de arte urbano": {
+    "provider": "pexels",
+    "score": 194,
+    "url": "https://images.pexels.com/photos/27872534/pexels-photo-27872534.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/candelaria-27872534/",
+    "texto": "Vibrant traditional doorway with art and decorations in Bogotá, Colombia. Jose Fernandez"
+  },
+  "Bogota::Cata de café colombiano": {
+    "provider": "pixabay",
+    "score": 104,
+    "url": "https://pixabay.com/get/gbca5a64759e8978b152772afc3f1eb48a898d59a3145f74312f6653c09e5f1d55353804df1140ff0b5d5376c0496de36362525ca03862a3efc3a6a8215546079_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/coffee-milk-coffee-beans-563800/",
+    "texto": "coffee, milk, coffee beans, cup of coffee, coffee cup, cup, pouring, cream, caffeine, cafe, pour, latte, drink, beverage, coffee, coffee, coffee, coffee, coffee"
+  },
+  "Bogota::Ciclovía en Bogotá": {
+    "provider": "pixabay",
+    "score": 184,
+    "url": "https://pixabay.com/get/g4b526b5ea72b23906a374bdbddf04cdc62e08de02747bac6c9ff1b6023737136ed8402a7ca496832b0585dd03c16170fdbcfbb26d31db0998fd1d49257516514_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/city-urban-colombia-bogota-8675218/",
+    "texto": "city, urban, colombia, bogota"
+  },
+  "Bogota::Senderismo en cerros orientales": {
+    "provider": "pexels",
+    "score": 194,
+    "url": "https://images.pexels.com/photos/5044845/pexels-photo-5044845.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/monserrate-peak-in-bogota-5044845/",
+    "texto": "Stunning landscape view of Monserrate Mountain with quaint buildings and pathway in Bogotá, Colombia. Santiago  Boada"
+  },
+  "Bogota::Tour nocturno de leyendas": {
+    "provider": "pixabay",
+    "score": 199,
+    "url": "https://pixabay.com/get/gf98848b0a96c8cd5587ea48df2b993edd7aa0422845ce3da76f616ebb50d55496101c4e36d0e91603482838bfd17f4a255153af28c9bdaa9b4c319877c1973f3_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/bogota-street-colombia-city-4463962/",
+    "texto": "bogota, street, colombia, city, cundinamarca, urban, candelaria, traditional, theatre, statue, human statue, artist, actor, masculine, art, people, bogota, bogota, bogota, bogota, bogota"
+  },
+  "Bogota::Ruta fotográfica por el centro histórico": {
+    "provider": "pixabay",
+    "score": 207,
+    "url": "https://pixabay.com/get/g4ab4d7cae78b40c071a4a3373e6e5abb9aa91f800239d5a4f99d88adbe98fc09d4408ca02583af9d4e33f7f081b27f0816513c34097f5e4501e1efcaa045cc58_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/bogota-colombia-street-architecture-5279634/",
+    "texto": "bogota, colombia, street, architecture, urban, city, bogota, bogota, bogota, bogota, bogota"
+  },
+  "Bogota::Chocolate santafereño con queso": {
+    "provider": "pixabay",
+    "score": 104,
+    "url": "https://pixabay.com/get/g07a0fcb0df5fa6bbd17a1ca28342c03113abdd384a99ab6d2e8f74cfc69d4449d795e91f129d9d8f7f802e69769489d1aadbdd079bbf5c102668ca66290eedba_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/hot-chocolate-drink-winter-girl-1047608/",
+    "texto": "hot chocolate, drink, winter, girl, chocolate, hot drink, cup, mug, cocoa, beverage, warm, season, dessert, sweet, christmas, cold, marshmallows, cozy, tasty, delicious, hot chocolate, hot chocolate, hot chocolate, hot chocolate, hot chocolate, winter, chocolate, cocoa, christmas, christmas, christmas, christmas"
+  },
+  "Bogota::Picnic en parque urbano": {
+    "provider": "pixabay",
+    "score": 174,
+    "url": "https://pixabay.com/get/ge27881d426d11b0122e7886841ac5ac9bf694759974cdf35ef370ea00a88cf3d9c5ec6c81fdbdec6430dc894c9f146bda3863d990dcacfcf328b04097c80e39c_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/umbrellas-road-people-crowd-8675221/",
+    "texto": "umbrellas, road, people, crowd, colombia, bogota, architecture, colombia, bogota, bogota, bogota, bogota, bogota"
+  },
+  "Bogota::Visita a mercado local": {
+    "provider": "pixabay",
+    "score": 199,
+    "url": "https://pixabay.com/get/gf6de154971aacbab34549ff3b1dd17342f6a220a87c336a1065bf3400849bf9393da3e704544c637621970840c96b55d4a2efea50d4a5e6a9fe5ca5fc7267ad0_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/plaza-de-lourdes-church-bogota-6579864/",
+    "texto": "plaza de lourdes, church, bogota, colombia, 19th-century church, church square, cathedral, bogota, bogota, bogota, bogota, bogota, colombia"
+  },
+  "Bogota::Tour de museos": {
+    "provider": "pexels",
+    "score": 186,
+    "url": "https://images.pexels.com/photos/14643376/pexels-photo-14643376.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/red-building-in-la-candelaria-in-bogota-colombia-14643376/",
+    "texto": "Classic facade in Bogotá's La Candelaria, featuring rustic windows and rich color. Maria  Pinto"
+  },
+  "Bogota::Clase de baile latino": {
+    "provider": "pixabay",
+    "score": 112,
+    "url": "https://pixabay.com/get/gffeec94ce48aa37d58095fc20948390efb3fe6d9b44bee0aa3c01cba9a72a480479969ebb67e93be6270c3b4d42ed86bca7ea9f6b4c9ccb2f7280705468eca09_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/girl-wayuu-indian-culture-colombia-4232024/",
+    "texto": "girl, wayuu, indian, culture, colombia, mochilas, bag, latinoamerica, traditional, colombian, clothing, wayuu, wayuu, wayuu, wayuu, wayuu, colombia, colombia, colombia"
+  },
+  "Bogota::Teatro en vivo": {
+    "provider": "pixabay",
+    "score": 164,
+    "url": "https://pixabay.com/get/gdebdad26152e185c940b5967e47cdd662acd9bd9c45b09f188d02086ad08722cfe866116010b6c245e5fa088b995ad37c28235611f35555bf7704f5ac5376c30_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/vintage-bogota-ancient-retro-3567130/",
+    "texto": "vintage, bogota, ancient, retro, decoration, 80s, interiors, inside, vintage, vintage, vintage, vintage, vintage, ancient, retro, retro, 80s, 80s, 80s"
+  },
+  "Bogota::Caminata cultural por La Candelaria": {
+    "provider": "pexels",
+    "score": 212,
+    "url": "https://images.pexels.com/photos/32475248/pexels-photo-32475248.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/colorful-street-scene-in-historic-bogota-32475248/",
+    "texto": "Bicyclists explore a charming street in Bogotá, Colombia's historic district. Val Bel"
+  },
+  "Bogota::Experiencia de café de especialidad": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/g48fa679ac32af6b8c68fd57f407d98caa860ce76199d89fa62dd2606af37efe723962b7c8e308fcd875c1ec2f0ba343f01d262f8fb6602818f84914ff260535c_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/coffee-milk-cappuccino-drink-caf%C3%A9-4862622/",
+    "texto": "coffee, milk, coffee cup, cappuccino, drink, café, mug, hot, caffeine, espresso, scent, breakfast"
+  },
+  "Bogota::Recorrido histórico guiado": {
+    "provider": "pexels",
+    "score": 167,
+    "url": "https://images.pexels.com/photos/4400974/pexels-photo-4400974.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/people-walking-on-the-plaza-4400974/",
+    "texto": "A lively scene at Bolivar Square in Bogotá, Colombia, featuring historic architecture and people walking. Jose Vasquez"
+  },
+  "Bogota::Tour de comida callejera": {
+    "provider": "pexels",
+    "score": 202,
+    "url": "https://images.pexels.com/photos/32452956/pexels-photo-32452956.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/colorful-street-in-bogota-s-la-candelaria-district-32452956/",
+    "texto": "Vibrant street with murals in Bogotá's historic La Candelaria district. Cobblestone path and local culture. Juan Diavanera"
+  },
+  "Bogota::Atardecer desde mirador": {
+    "provider": "pexels",
+    "score": 194,
+    "url": "https://images.pexels.com/photos/13584674/pexels-photo-13584674.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/brown-mountain-under-blue-sky-13584674/",
+    "texto": "Scenic view of Bogotá, Colombia, with Monserrate Hills under a sunset sky and fluffy clouds. Nicolás David Cristancho Gutierrez"
+  },
+  "Bogota::Escapada a laguna cercana": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/gbad32063b0539cc5cf1b6b91b42a112df2e0204594d3fd4b20010a0c337357d32f0d00287f8cb2c628f5877715210d30d8e5f5d3e98cbffaf55dd85786189146_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/bird-hummingbird-colombia-green-5353404/",
+    "texto": "bird, hummingbird, colombia, green, nature, hummingbird, hummingbird, hummingbird, hummingbird, hummingbird, colombia, colombia, colombia, colombia, nature"
+  },
+  "Medellin::Tour de transformación social": {
+    "provider": "pexels",
+    "score": 204,
+    "url": "https://images.pexels.com/photos/25019686/pexels-photo-25019686.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/colorful-staircase-in-medellin-25019686/",
+    "texto": "Vibrant staircase with street art in Comuna 13, Medellín, Colombia, showcasing cultural expressions. Andrés Miranda"
+  },
+  "Medellin::Recorrido de grafiti": {
+    "provider": "pexels",
+    "score": 264,
+    "url": "https://images.pexels.com/photos/30017180/pexels-photo-30017180.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/charming-streets-of-guatape-colombia-30017180/",
+    "texto": "A vibrant street scene in Guatape, Colombia, showcasing colorful murals and architecture. Jhonny Salas Brochero"
+  },
+  "Medellin::Viaje en metrocable": {
+    "provider": "pixabay",
+    "score": 174,
+    "url": "https://pixabay.com/get/gcf27f5626303c5b6057e53779580d4526ba29490cc063d2e31a5ae0238055602d07b24165d91f5e73911f55cad548fdc01b5ee72750bc583059c129d24894917_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/skateboard-medellin-beam-2653610/",
+    "texto": "skateboard, medellin, beam, skateboard, skateboard, skateboard, skateboard, skateboard, medellin, medellin, medellin, beam"
+  },
+  "Medellin::Senderismo en parque natural": {
+    "provider": "pixabay",
+    "score": 252,
+    "url": "https://pixabay.com/get/gb4f3485bf1d0efa13eca09c955eadf0a63c9d7a2faeab599b7711070720548659cd67ada6272bd07a47fd4f7ad5fe12ac9263e2de5340eb0fd74386538b599de_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/medell%C3%ADn-colombia-botero-statue-182342/",
+    "texto": "medellín, colombia, botero, statue, sculpture, artwork, design, metal, metal sculpture, metal work, art, craft, creative, creativity, artistic, colombia, botero, botero, botero, botero, botero"
+  },
+  "Medellin::Clase de café especial": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/g1a785e47b01e6a9f0391322b26da79ea5b7a4d574a547e95c5f3c1912e37da7b48f5ea9fd4f1a84bef9fe7967c51fff8ec5462906cb5716a851434cd3800d673_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/coffee-mug-heart-caffeine-food-5176961/",
+    "texto": "coffee, mug, heart, caffeine, food, black, aroma, books, espresso, drink, coffee cup, valentine's day, in the morning, cafe, warm, breakfast, seeds, break, hot, restaurant, café, menu, lunch, taste"
+  },
+  "Medellin::Ruta gastronómica paisa": {
+    "provider": "pixabay",
+    "score": 174,
+    "url": "https://pixabay.com/get/g598219183c5e46adbc101d5b6fbd53345a68fbf14ba3ed0186541734688f271dcfee1205b8d8449bc4f742f8857a3012e87d117bc38642aba5118af96feccff5_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/animals-nature-pets-portrait-2360631/",
+    "texto": "animals, nature, pets, portrait, horses, free, refuge, environment, pet, mammals, farm, medellin, colombia, pretty, black and white, monochrome, photography, friends"
+  },
+  "Medellin::Parapente cerca de Medellín": {
+    "provider": "pixabay",
+    "score": 174,
+    "url": "https://pixabay.com/get/g3ec97845d98738ac8db60e110f061d57f83564486c552a0826ca511b063612a29cedf8724a5a27e9423e498cc98ba75a1bc548a38bcf567db8505e3b14dce09c_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/paragliding-paraglider-flying-sea-4851228/",
+    "texto": "paragliding, paraglider, flying, nature, sea, coast, baltic sea"
+  },
+  "Medellin::Visita a finca cafetera": {
+    "provider": "pexels",
+    "score": 237,
+    "url": "https://images.pexels.com/photos/30017006/pexels-photo-30017006.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/aerial-view-of-guatape-in-colombia-30017006/",
+    "texto": "Stunning aerial view of Guatape, showcasing lush green landscape and waterways. Jhonny Salas Brochero"
+  },
+  "Medellin::Clase de cocina antioqueña": {
+    "provider": "pexels",
+    "score": 237,
+    "url": "https://images.pexels.com/photos/15837113/pexels-photo-15837113.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/smiling-cook-cutting-roasted-chicken-15837113/",
+    "texto": "Smiling chef in uniform carving roasted chicken in Medellín restaurant kitchen. Andres Segura"
+  },
+  "Medellin::Caminata urbana por barrios históricos": {
+    "provider": "pixabay",
+    "score": 172,
+    "url": "https://pixabay.com/get/g7ce11aa4a35fa7edea8f0b1de9a5ede95a9e4ff2f307f4f0b3c13cb91bc26670893955d47bc0dcaa1dff5bb50877372c6d171531f9353d8af413f68362936624_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/skateboard-medellin-beam-2653606/",
+    "texto": "skateboard, medellin, beam"
+  },
+  "Medellin::Tour fotográfico urbano": {
+    "provider": "pexels",
+    "score": 159,
+    "url": "https://images.pexels.com/photos/14202433/pexels-photo-14202433.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/houses-on-mountain-at-the-city-of-medellin-in-antioquia-colombia-14202433/",
+    "texto": "Vibrant street scene in Medellín's neighborhood with bustling activity and architecture. Palu Malerba"
+  },
+  "Medellin::Clase de salsa": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/g13522c45e295add484061f5d9263fbf6128f4faf0c7811e6a28cf943bb2018bec590774df88c4ffbeeb0b344e4303f20b96c576a4e433f46f5d7f2c35aab75f1_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/skateboard-medellin-beam-2653608/",
+    "texto": "skateboard, medellin, beam"
+  },
+  "Medellin::Show de música en vivo": {
+    "provider": "pixabay",
+    "score": 182,
+    "url": "https://pixabay.com/get/geb69cf8af5f7342660d2107250bf90aee730c2481796c9e856521adc59b0c7aad0a516475635181e087291fcf30c9e13077b3cd0b7a714da007e255b7b88633d_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/music-concert-night-guitarist-9963662/",
+    "texto": "music, concert, night, guitarist, stage, performance, singer, artist, crowd, smoke, lighting, viral, rock, live, inspirational, live performance, musician, shadowy, electric guitar, musical group"
+  },
+  "Medellin::Excursión a cascadas": {
+    "provider": "pixabay",
+    "score": 172,
+    "url": "https://pixabay.com/get/gf5cc6ffe868cc81a0ee08b737c0ba9158f440364021282e0e14a56c30f4be52a56538d9226737aa1fc47b788b079315496517cd3c29924b83bdfe02848955e28_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/breitachklamm-oberstdorf-allg%C3%A4u-1629419/",
+    "texto": "breitachklamm, nature, oberstdorf, allgäu, bavaria, breitachklamm near oberstdorf, mountain stream, tobel, canyon, water, bach, waterfall, rush"
+  },
+  "Medellin::Picnic en zona verde": {
+    "provider": "pexels",
+    "score": 169,
+    "url": "https://images.pexels.com/photos/37000758/pexels-photo-37000758.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/picnic-in-retiro-antioquia-with-fresh-fruits-37000758/",
+    "texto": "Woman enjoying a vibrant outdoor picnic with fresh fruits and snacks in Retiro, Antioquia, Colombia. Camilo Ospina"
+  },
+  "Medellin::Mercado de diseño local": {
+    "provider": "pexels",
+    "score": 159,
+    "url": "https://images.pexels.com/photos/28405115/pexels-photo-28405115.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/aerial-view-of-medellin-cityscape-in-colombia-28405115/",
+    "texto": "Bright day cityscape of Medellín, Colombia featuring modern architecture and green spaces. Edgar  Rodrigo"
+  },
+  "Medellin::Atardecer desde terraza": {
+    "provider": "pexels",
+    "score": 159,
+    "url": "https://images.pexels.com/photos/14239423/pexels-photo-14239423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/a-photo-of-a-city-under-blue-sky-with-clouds-14239423/",
+    "texto": "Panoramic view of Medellín, Colombia, showcasing urban development and city skyline. Daniel Vélez"
+  },
+  "Medellin::Recorrido nocturno por Provenza": {
+    "provider": "pexels",
+    "score": 169,
+    "url": "https://images.pexels.com/photos/34044012/pexels-photo-34044012.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/aerial-view-of-medellin-s-urban-landscape-34044012/",
+    "texto": "Diverse architecture in Medellín, Colombia, showcasing urban development against lush mountains. Josué Rodríguez"
+  },
+  "Medellin::Escapada a pueblo cercano": {
+    "provider": "pixabay",
+    "score": 172,
+    "url": "https://pixabay.com/get/gc6e0b79f16a94317f9b9fb1d1d2477b2c7239e344a02a664b08e0116621fd99d95c659c1e36b2c75df97741785a8b33eb7033db9bc619688eabaf4fb6759ede4_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/colombia-guatape-tourism-2410694/",
+    "texto": "colombia, guatape, tourism, sightseeing, vacations, nature, city, cityscape, road, statue, simon bolivar, tree"
+  },
+  "Medellin::Experiencia cultural local": {
+    "provider": "pexels",
+    "score": 169,
+    "url": "https://images.pexels.com/photos/13355514/pexels-photo-13355514.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/view-of-a-church-13355514/",
+    "texto": "Stunning Gothic cathedral with spires in Medellín, Antioquia, Colombia on a sunny day. Jose Fernandez"
+  },
+  "Cartagena::Tour gastronómico costeño": {
+    "provider": "pixabay",
+    "score": 217,
+    "url": "https://pixabay.com/get/g03f3b5805740c307ac2ca94e9e24b9595437d0e8bacdbe7756d45f5f9d92b1088f3198d7721239053063eda64722f8b5dd1ecaeae2c9e9343dc2d04ba1bf4c36_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/transport-baru-cartagena-de-indias-1188484/",
+    "texto": "transport, nature, baru, cartagena de indias, colombia, boat, sea, the sunset"
+  },
+  "Cartagena::Clase de cocina cartagenera": {
+    "provider": "pixabay",
+    "score": 129,
+    "url": "https://pixabay.com/get/g1d80c316b20c06f8803e56ee60e6f292a2684a9da3a62402fa1c0b6753788ec1c9b032211bcefdeb64b445d337bc991c37f1019576df6204daa9f61531284a0d_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/cartagena-colombia-caribbean-parrot-4910430/",
+    "texto": "cartagena, colombia, caribbean, nature, parrot, era, animal, bird"
+  },
+  "Cartagena::Paseo en barco por la bahía": {
+    "provider": "pixabay",
+    "score": 137,
+    "url": "https://pixabay.com/get/gbaf83d65a7e5dae765c4dd70e076010c4ff992761d3a6a689f42c375189926d26de82870fa9149de1a4f0ac66f8f6531dfbc863b1638784fc909321901ca22bf_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/cartagena-historic-center-colombia-2903654/",
+    "texto": "cartagena, historic center, colombia, cartagena, cartagena, cartagena, cartagena, colombia, colombia, colombia, colombia, colombia"
+  },
+  "Cartagena::Snorkel en islas": {
+    "provider": "pixabay",
+    "score": 182,
+    "url": "https://pixabay.com/get/g2d5d41301e9da06ca135a9ad3aadbb7b845d80407988bcda7fce6a16724b6bbed525d3dfd3aaf39826b4a81d656929a293a5b16fd40ea8de7ee9a8a92adf8ebb_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/sunset-lighthouse-cartagena-7047251/",
+    "texto": "sunset, lighthouse, cartagena, colombia, landscape, nature, island"
+  },
+  "Cartagena::Island hopping": {
+    "provider": "pixabay",
+    "score": 182,
+    "url": "https://pixabay.com/get/gfc9f65e5a3d9f2c5af7feaab45e8ace5bba89b0aeb737f7fbc8f53ab5f103f0dfcdb0222a41add6db7f9685f0f002043178e83dbbde0ce1f1f42700a94473250_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/church-sunset-religion-colombia-7292428/",
+    "texto": "church, sunset, religion, colombia, nature, people, cartagena, cartagena, cartagena, cartagena, cartagena, cartagena"
+  },
+  "Cartagena::Atardecer en la muralla": {
+    "provider": "pexels",
+    "score": 124,
+    "url": "https://images.pexels.com/photos/13713688/pexels-photo-13713688.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/buildings-by-the-sea-13713688/",
+    "texto": "Breathtaking sunset view of Cartagena, Colombia skyline with crashing ocean waves. Miguel angel Morales García"
+  },
+  "Cartagena::Baile de champeta": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/g125fffc8d70b8f31e979cb03634d729b63a7d06c0bc90ef6659dc1947789cc4f3c2ad465d4200411caa3fcaff7c5f97c84ebb6430bfa5c88fe6d7a8e0ad0a78c_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/colombia-statue-cartagena-caribbean-2466491/",
+    "texto": "colombia, statue, cartagena, caribbean, don blas de lezo, admiral, castillo san felipe, plaza, city square, palm trees"
+  },
+  "Cartagena::Tour nocturno de leyendas": {
+    "provider": "pexels",
+    "score": 124,
+    "url": "https://images.pexels.com/photos/19740978/pexels-photo-19740978.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/narrow-alley-in-city-19740978/",
+    "texto": "Colorful narrow street with balconies in Cartagena, Colombia, highlighting vibrant architecture. Andres Villamizar"
+  },
+  "Cartagena::Ruta fotográfica colonial": {
+    "provider": "pexels",
+    "score": 142,
+    "url": "https://images.pexels.com/photos/36895093/pexels-photo-36895093.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/colorful-street-scene-in-cartagena-colombia-36895093/",
+    "texto": "Vibrant street in Cartagena with people in traditional dress, sunny atmosphere. Diego  HG"
+  },
+  "Cartagena::Paseo en bicicleta por barrios históricos": {
+    "provider": "pexels",
+    "score": 124,
+    "url": "https://images.pexels.com/photos/36856200/pexels-photo-36856200.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/vibrant-cartagena-street-with-international-flags-36856200/",
+    "texto": "A colorful street in Cartagena, Colombia, adorned with international flags and lively pedestrian traffic. Woody Willis"
+  },
+  "Cartagena::Kayak en manglares": {
+    "provider": "pixabay",
+    "score": 104,
+    "url": "https://pixabay.com/get/g316ae31c3cf3a2e161bc7260b119ec9c596fe8bd32640836dd7fda281d78360cb076b1502409e565272f837bb462907a9528cf6b94b49478e828df88b45e5113_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/man-canoe-kayak-boating-kayaking-4380804/",
+    "texto": "man, canoe, kayak, boating, kayaking, lake, adventure, banff, alberta, canada, water, nature, scenery, mountain, travel, forest, sky, outdoor, summer, scenic, relax, sports, vacation, canoe, canoe, kayak, kayak, kayak, kayak, kayaking, kayaking, kayaking, kayaking, banff, canada, canada, canada, canada, canada, travel"
+  },
+  "Cartagena::Paddleboard en el mar": {
+    "provider": "pixabay",
+    "score": 139,
+    "url": "https://pixabay.com/get/g19a29170a632ae952d86f01bde9938cce17c6253bc14365cfec07aa67e5d2fd2bef1afd0439e4b8e79e427ad71af5f11c3eb9920088a5019fdc8a9521c4379f8_1280.jpg",
+    "pageURL": "https://pixabay.com/photos/standup-paddleboarding-paddle-board-6342951/",
+    "texto": "standup paddleboarding, paddle board, sea, paddle, leisure, nature, vacation, water sport, adventure, recreation, holiday, sport, happy, ocean, lake, river, tourists, man, woman"
+  },
+  "Cartagena::Día de playa en Barú": {
+    "provider": "pexels",
+    "score": 222,
+    "url": "https://images.pexels.com/photos/35211242/pexels-photo-35211242.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/aerial-view-of-tropical-beach-with-boats-and-umbrellas-35211242/",
+    "texto": "Crystal-clear waters and sandy beaches of Bolívar, Colombia, viewed from above. Juan Coronel"
+  },
+  "Cartagena::Cena frente al mar": {
+    "provider": "pexels",
+    "score": 116,
+    "url": "https://images.pexels.com/photos/15104994/pexels-photo-15104994.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pageURL": "https://www.pexels.com/photo/catedral-basilica-metropolitana-de-santa-catalina-de-alejandria-in-cartagena-colombia-15104994/",
+    "texto": "Explore the stunning coastal cityscape of Cartagena featuring a historic cathedral and vibrant summer vibes. Jaime A Vega"
+  }
+}

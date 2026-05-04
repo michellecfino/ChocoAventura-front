@@ -1,14 +1,17 @@
 import 'package:choco/app/colors.dart';
+import 'package:choco/core/assets/asset_path_util.dart';
 import 'package:flutter/material.dart';
 
-/// Solo ilustraciones de Choco; sin mapas/fotos genéricas que se vean “rotas” o fuera de contexto.
+/// Imágenes reales en `assets/choco/` (orden de preferencia).
+const String kChocoPrimaryAsset = 'assets/choco/saludando.png';
+
 const List<String> kChocoAssetCandidates = [
-  'lib/assets/choco_reference.png',
-  'lib/assets/choco_icon.png',
-  'lib/assets/CHOCO_Logo.png',
-  'lib/assets/choco_grupo.png',
-  'lib/assets/choco_estresado.png',
+  kChocoPrimaryAsset,
+  'assets/choco/sonrie.png',
   'assets/choco/choco_icon.png',
+  'assets/choco/logo.png',
+  'assets/choco/hablando.png',
+  'assets/choco/usando_app.png',
 ];
 
 List<String> _rotatedCandidates(int start) {
@@ -21,7 +24,7 @@ List<String> _rotatedCandidates(int start) {
   ];
 }
 
-/// Ilustración real de Choco; si ningún asset existe, icono oliva discreto (sin dibujos improvisados).
+/// Ilustración de Choco desde assets reales; si falla, icono de marca (sin fotos genéricas).
 class ChocoIllustration extends StatelessWidget {
   final double size;
   final double borderRadius;
@@ -30,16 +33,48 @@ class ChocoIllustration extends StatelessWidget {
   /// Cambia el orden de prueba de assets (variación visual entre tarjetas).
   final int? variantSeed;
 
+  /// Solo intenta el asset principal y pocos fallbacks seguros.
+  final bool preferPrimaryOnly;
+
+  /// Si no es null, se muestra primero (p. ej. Choco «hablando» mientras escucha).
+  final String? overrideAsset;
+
   const ChocoIllustration({
     super.key,
     this.size = 44,
     this.borderRadius = 10,
     this.fit = BoxFit.contain,
     this.variantSeed,
+    this.preferPrimaryOnly = false,
+    this.overrideAsset,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (overrideAsset != null && overrideAsset!.isNotEmpty) {
+      final chain = [overrideAsset!, ...kChocoAssetCandidates.where((e) => e != overrideAsset)];
+      return SizedBox(
+        width: size,
+        height: size,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: _AssetFallbackChain(candidates: chain, index: 0, size: size, fit: fit),
+        ),
+      );
+    }
+
+    if (preferPrimaryOnly) {
+      final safe = <String>[kChocoPrimaryAsset, ...kChocoAssetCandidates.where((e) => e != kChocoPrimaryAsset)];
+      return SizedBox(
+        width: size,
+        height: size,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: _AssetFallbackChain(candidates: safe, index: 0, size: size, fit: fit),
+        ),
+      );
+    }
+
     final rotated = _rotatedCandidates(variantSeed ?? 0);
     return SizedBox(
       width: size,
@@ -76,7 +111,7 @@ class _AssetFallbackChain extends StatelessWidget {
       return _elegantMissing(size);
     }
     return Image.asset(
-      candidates[index],
+      normalizeFlutterAssetKey(candidates[index]),
       width: size,
       height: size,
       fit: fit,

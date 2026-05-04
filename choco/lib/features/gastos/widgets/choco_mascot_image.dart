@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'choco_illustration.dart';
 
-/// Wrapper retrocompatible: usa ilustraciones reales desde [lib/assets] vía [ChocoIllustration].
+/// Wrapper retrocompatible: usa ilustraciones reales desde `assets/choco/` vía [ChocoIllustration].
 class ChocoMascotImage extends StatelessWidget {
   final double size;
   final bool showBorder;

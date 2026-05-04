@@ -1,6 +1,8 @@
 import 'package:choco/app/colors.dart';
 import 'package:choco/app/design_tokens.dart';
 import 'package:choco/app/fonts.dart';
+import 'package:choco/core/assets/asset_resolver.dart';
+import 'package:choco/core/widgets/destino_visual.dart';
 import 'package:flutter/material.dart';
 
 import '../models/gastos_models.dart';
@@ -24,6 +26,7 @@ class GastosScreenState extends State<GastosScreen> {
   late final GastosService _service = widget.gastosService;
   FiltroGastosChip _filtro = FiltroGastosChip.todos;
   late Future<List<ViajeFinancieroResumen>> _future;
+  final Map<String, String> _bannerPorViajeId = {};
 
   static const _filtrosOrden = <(FiltroGastosChip, String)>[
     (FiltroGastosChip.todos, 'Todos'),
@@ -41,6 +44,20 @@ class GastosScreenState extends State<GastosScreen> {
   void initState() {
     super.initState();
     _future = _cargar();
+    _precargarBannersDestino();
+  }
+
+  Future<void> _precargarBannersDestino() async {
+    try {
+      final r = await AssetResolver.instance();
+      final viajes = _service.viajesMockActuales();
+      final m = <String, String>{};
+      for (final v in viajes) {
+        final dk = (v.destinoKey ?? 'cartagena').toLowerCase();
+        m[v.idViaje] = r.resolveDestinoImage(dk);
+      }
+      if (mounted) setState(() => _bannerPorViajeId.addAll(m));
+    } catch (_) {}
   }
 
   Future<List<ViajeFinancieroResumen>> _cargar() async {
@@ -88,22 +105,44 @@ class GastosScreenState extends State<GastosScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => mostrarRegistrarGastoSheet(
-          context,
-          viajePrefijado: null,
-          service: _service,
-          alGuardar: _refrescar,
-        ),
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
-        elevation: 5,
-        highlightElevation: 8,
-        icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
-        label: Text(
-          'Gasto',
-          style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
-        ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'fab_gasto_voz',
+            backgroundColor: AppColors.primaryDark,
+            foregroundColor: Colors.white,
+            onPressed: () => mostrarRegistrarGastoSheet(
+              context,
+              viajePrefijado: null,
+              service: _service,
+              alGuardar: _refrescar,
+              initialTab: 1,
+            ),
+            child: const Icon(Icons.mic_rounded, size: 20),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'fab_gasto_manual',
+            onPressed: () => mostrarRegistrarGastoSheet(
+              context,
+              viajePrefijado: null,
+              service: _service,
+              alGuardar: _refrescar,
+              initialTab: 0,
+            ),
+            backgroundColor: AppColors.primaryDark,
+            foregroundColor: Colors.white,
+            elevation: 4,
+            highlightElevation: 7,
+            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
+            label: Text(
+              'Gasto',
+              style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: RefreshIndicator(
@@ -181,6 +220,7 @@ class GastosScreenState extends State<GastosScreen> {
                         return _ViajeCardRica(
                           viaje: v,
                           index: i,
+                          bannerAssetPath: _bannerPorViajeId[v.idViaje],
                           onVerMas: () async {
                             await Navigator.push<void>(
                               context,
@@ -256,7 +296,7 @@ class _HeroGastos extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Gastos', style: AppFonts.display(20)),
+                        Text('Gastos del viaje', style: AppFonts.display(19)),
                         const SizedBox(height: 5),
                         Text(
                           'Todo claro para que la aventura siga',
@@ -305,25 +345,15 @@ class _HeroGastos extends StatelessWidget {
 class _ViajeCardRica extends StatelessWidget {
   final ViajeFinancieroResumen viaje;
   final int index;
+  final String? bannerAssetPath;
   final VoidCallback onVerMas;
 
   const _ViajeCardRica({
     required this.viaje,
     required this.index,
+    this.bannerAssetPath,
     required this.onVerMas,
   });
-
-  LinearGradient _coverGradient(int seed) {
-    final t = (seed.abs() % 1000) / 1000.0;
-    return LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Color.lerp(AppColors.primary, AppColors.background, 0.05)!,
-        Color.lerp(AppColors.primaryDark, AppColors.primary, 0.35 + t * 0.1)!,
-      ],
-    );
-  }
 
   List<Widget> _tagsEstadoViaje() {
     final chips = <Widget>[];
@@ -353,9 +383,9 @@ class _ViajeCardRica extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final seed = viaje.nombreViaje.hashCode;
     final pctPres =
         viaje.presupuesto > 0 ? ((viaje.hasGastado / viaje.presupuesto) * 100).clamp(0, 999).round() : null;
+    final estadoTags = _tagsEstadoViaje();
 
     return Material(
       elevation: 3,
@@ -368,31 +398,64 @@ class _ViajeCardRica extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 78,
+              height: 64,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  DecoratedBox(decoration: BoxDecoration(gradient: _coverGradient(seed))),
+                  if (bannerAssetPath != null)
+                    Image.asset(
+                      bannerAssetPath!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, e, s) => DestinoCoverDecorada(
+                        titulo: viaje.nombreViaje,
+                        height: 64,
+                      ),
+                    )
+                  else
+                    DestinoCoverDecorada(titulo: viaje.nombreViaje, height: 64),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.0),
+                          Colors.black.withValues(alpha: 0.45),
+                        ],
+                      ),
+                    ),
+                  ),
                   Positioned(
-                    left: 12,
-                    right: 12,
-                    bottom: 10,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+                    left: 10,
+                    right: 10,
+                    bottom: 8,
+                    top: 8,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          viaje.nombreViaje,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppFonts.title(15.5).copyWith(
-                            color: Colors.white,
-                            height: 1.2,
-                            shadows: [Shadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 10)],
+                        Expanded(
+                          child: Text(
+                            viaje.nombreViaje,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.title(14.5).copyWith(
+                              color: Colors.white,
+                              height: 1.15,
+                              shadows: [Shadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 10)],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Wrap(spacing: 6, runSpacing: 4, children: _tagsEstadoViaje()),
+                        const SizedBox(width: 8),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            for (var i = 0; i < estadoTags.length; i++) ...[
+                              if (i > 0) const SizedBox(height: 4),
+                              estadoTags[i],
+                            ],
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -400,7 +463,7 @@ class _ViajeCardRica extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -452,12 +515,13 @@ class _ViajeCardRica extends StatelessWidget {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primaryDark,
                       foregroundColor: Colors.white,
-                      elevation: 2,
+                      elevation: 3,
                       shadowColor: AppColors.shadowWarm,
-                      padding: const EdgeInsets.symmetric(vertical: 11),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      minimumSize: const Size(double.infinity, 46),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: Text('Ver detalles', style: AppFonts.label(13.5, weight: FontWeight.w800)),
+                    child: Text('Ver detalles', style: AppFonts.label(14, weight: FontWeight.w800)),
                   ),
                 ],
               ),

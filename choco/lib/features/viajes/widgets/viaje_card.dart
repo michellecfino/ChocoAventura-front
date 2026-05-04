@@ -1,69 +1,83 @@
 import 'package:choco/app/colors.dart';
 import 'package:choco/app/design_tokens.dart';
-import 'package:choco/features/gastos/widgets/choco_illustration.dart';
+import 'package:choco/app/fonts.dart';
+import 'package:choco/core/widgets/destino_visual.dart';
 import 'package:choco/features/viajes/models/grupo_viaje_model.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 class ViajeCard extends StatelessWidget {
   final GrupoViajeModel viaje;
-  final VoidCallback? onTap;
+  final String? bannerAssetPath;
+  final VoidCallback? onVerDetalle;
+  final VoidCallback? onCtaPrincipal;
 
   const ViajeCard({
     super.key,
     required this.viaje,
-    this.onTap,
+    this.bannerAssetPath,
+    this.onVerDetalle,
+    this.onCtaPrincipal,
   });
 
-  LinearGradient _coverGradient() {
-    final h = viaje.destino.hashCode.abs();
-    final t = (h % 100) / 100.0;
-    return LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Color.lerp(AppColors.primary, AppColors.background, 0.15)!,
-        Color.lerp(AppColors.primary, const Color(0xFF8B9048), 0.35 + t * 0.15)!,
-      ],
-    );
+  int? get _dias {
+    // Mock simple: si hay fechas texto, estimar 4 días por defecto para UI.
+    if (viaje.fechaInicio != null && viaje.fechaFin != null) return 4;
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final seed = viaje.nombre.hashCode;
+    final banner = bannerAssetPath;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Material(
         elevation: 2,
-        shadowColor: AppColors.text.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        shadowColor: AppColors.text.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.md + 2),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
+          onTap: onCtaPrincipal ?? onVerDetalle,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
-                height: 96,
+                height: 118,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    DecoratedBox(decoration: BoxDecoration(gradient: _coverGradient())),
-                    Positioned(
-                      right: -6,
-                      bottom: -8,
-                      child: Opacity(
-                        opacity: 0.35,
-                        child: ChocoIllustration(size: 96, borderRadius: 18, variantSeed: seed),
+                    if (banner != null)
+                      Image.asset(
+                        banner,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, e, s) => DestinoCoverDecorada(
+                          titulo: viaje.destinoNombre,
+                          height: 118,
+                        ),
+                      )
+                    else
+                      DestinoCoverDecorada(
+                        titulo: viaje.destinoNombre,
+                        height: 118,
+                      ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.05),
+                            Colors.black.withValues(alpha: 0.55),
+                          ],
+                        ),
                       ),
                     ),
                     Positioned(
-                      left: 14,
-                      right: 14,
-                      bottom: 12,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      left: 12,
+                      right: 12,
+                      top: 10,
+                      child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -74,30 +88,38 @@ class ViajeCard extends StatelessWidget {
                             ),
                             child: Text(
                               viaje.estadoDisplay,
-                              style: GoogleFonts.poppins(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                              style: AppFonts.label(10.5, weight: FontWeight.w800).copyWith(color: Colors.white),
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const Spacer(),
                           Text(
-                            viaje.nombre,
+                            viaje.destinoNombre,
+                            style: AppFonts.label(11, weight: FontWeight.w700).copyWith(color: Colors.white.withValues(alpha: 0.92)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 12,
+                      right: 12,
+                      bottom: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            viaje.nombreViaje,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w800,
-                              height: 1.15,
+                            style: AppFonts.display(17).copyWith(
                               color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.25),
-                                  blurRadius: 10,
-                                ),
-                              ],
+                              height: 1.1,
+                              shadows: [Shadow(color: Colors.black.withValues(alpha: 0.35), blurRadius: 8)],
                             ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${viaje.fechaInicio ?? '—'} → ${viaje.fechaFin ?? '—'}',
+                            style: AppFonts.body(11.5, color: Colors.white.withValues(alpha: 0.9)),
                           ),
                         ],
                       ),
@@ -106,41 +128,123 @@ class ViajeCard extends StatelessWidget {
                 ),
               ),
               Container(
-                color: Colors.white.withValues(alpha: 0.96),
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                color: AppColors.surfaceElevated,
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.place_rounded, size: 18, color: AppColors.primary.withValues(alpha: 0.9)),
+                        Icon(Icons.place_rounded, size: 17, color: AppColors.primary.withValues(alpha: 0.9)),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
-                            viaje.destino,
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13.5,
-                              color: AppColors.text,
-                            ),
+                            viaje.ciudadDepartamento,
+                            style: AppFonts.body(12.5, color: AppColors.text.withValues(alpha: 0.88)),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.groups_rounded, size: 18, color: AppColors.text.withValues(alpha: 0.55)),
-                        const SizedBox(width: 6),
+                        Icon(Icons.groups_rounded, size: 16, color: AppColors.text.withValues(alpha: 0.5)),
+                        const SizedBox(width: 4),
                         Text(
                           '${viaje.participantes} ${viaje.participantes == 1 ? 'persona' : 'personas'}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.5,
-                            color: AppColors.text.withValues(alpha: 0.72),
+                          style: AppFonts.body(12, color: AppColors.text.withValues(alpha: 0.72)),
+                        ),
+                        if (_dias != null) ...[
+                          const SizedBox(width: 12),
+                          Icon(Icons.date_range_rounded, size: 16, color: AppColors.text.withValues(alpha: 0.5)),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$_dias días',
+                            style: AppFonts.body(12, color: AppColors.text.withValues(alpha: 0.72)),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Fase: ${viaje.faseActual.etiquetaCorta}',
+                      style: AppFonts.label(11.5, weight: FontWeight.w800).copyWith(color: AppColors.primaryDark),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            viaje.codigoInvitacion,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.label(12.5, weight: FontWeight.w800).copyWith(
+                              color: AppColors.text.withValues(alpha: 0.88),
+                              letterSpacing: 0.2,
+                            ),
                           ),
                         ),
-                        const Spacer(),
-                        Icon(Icons.chevron_right_rounded, color: AppColors.primary.withValues(alpha: 0.65)),
+                        IconButton.filledTonal(
+                          tooltip: 'Copiar código',
+                          style: IconButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.all(8),
+                          ),
+                          onPressed: () async {
+                            final ctx = context;
+                            try {
+                              await Clipboard.setData(ClipboardData(text: viaje.codigoInvitacion));
+                              if (!ctx.mounted) return;
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text('Código copiado', style: AppFonts.body(14)),
+                                  behavior: SnackBarBehavior.floating,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            } catch (_) {
+                              if (!ctx.mounted) return;
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text('No se pudo copiar. Selecciona el código manualmente.', style: AppFonts.body(14)),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.copy_rounded, size: 18),
+                        ),
+                        IconButton.filledTonal(
+                          tooltip: 'Más información',
+                          style: IconButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.all(8),
+                          ),
+                          onPressed: onVerDetalle,
+                          icon: const Icon(Icons.info_outline_rounded, size: 20),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: onCtaPrincipal,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.primaryDark,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 11),
+                              elevation: 1,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            ),
+                            child: Text(
+                              viaje.faseActual.ctaPrincipal,
+                              style: AppFonts.label(13, weight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],

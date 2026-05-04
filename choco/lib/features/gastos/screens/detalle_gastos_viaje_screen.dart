@@ -74,22 +74,43 @@ class _DetalleGastosViajeScreenState extends State<DetalleGastosViajeScreen> {
         title: Text('Gastos del viaje', style: AppFonts.title(15)),
         centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => mostrarRegistrarGastoSheet(
-          context,
-          viajePrefijado: widget.resumen,
-          service: widget.service,
-          alGuardar: _refrescar,
-        ),
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
-        elevation: 5,
-        highlightElevation: 8,
-        icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
-        label: Text(
-          'Gasto',
-          style: AppFonts.label(13.5, weight: FontWeight.w800).copyWith(color: Colors.white),
-        ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'det_voz',
+            backgroundColor: AppColors.primaryDark,
+            foregroundColor: Colors.white,
+            onPressed: () => mostrarRegistrarGastoSheet(
+              context,
+              viajePrefijado: widget.resumen,
+              service: widget.service,
+              alGuardar: _refrescar,
+              initialTab: 1,
+            ),
+            child: const Icon(Icons.mic_rounded, size: 20),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'det_manual',
+            onPressed: () => mostrarRegistrarGastoSheet(
+              context,
+              viajePrefijado: widget.resumen,
+              service: widget.service,
+              alGuardar: _refrescar,
+              initialTab: 0,
+            ),
+            backgroundColor: AppColors.primaryDark,
+            foregroundColor: Colors.white,
+            elevation: 4,
+            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
+            label: Text(
+              '+ Gasto',
+              style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: FutureBuilder<DetalleFinancieroViaje>(
@@ -254,33 +275,39 @@ class _HeroBalanceViaje extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
             child: Column(
               children: [
-                Text(
-                  resumen.nombreViaje,
-                  textAlign: TextAlign.center,
-                  style: AppFonts.title(16.5).copyWith(color: AppColors.creamLight, height: 1.2),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 6,
-                  runSpacing: 6,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (detalle.todoSaldado)
-                      _HeroTag(label: 'Saldado', fg: AppColors.primaryDark, bg: AppColors.creamLight)
-                    else ...[
-                      if (resumen.tuDebes > 0)
-                        _HeroTag(label: 'Debes', fg: Colors.white, bg: AppColors.owe.withValues(alpha: 0.88)),
-                      if (resumen.teDeben > 0)
-                        _HeroTag(label: 'Te deben', fg: Colors.white, bg: AppColors.owed.withValues(alpha: 0.9)),
-                    ],
+                    Expanded(
+                      child: Text(
+                        resumen.nombreViaje,
+                        style: AppFonts.title(15).copyWith(color: AppColors.creamLight, height: 1.15),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        if (detalle.todoSaldado)
+                          _HeroTag(label: 'Saldado', fg: AppColors.primaryDark, bg: AppColors.creamLight)
+                        else ...[
+                          if (resumen.tuDebes > 0)
+                            _HeroTag(label: 'Debes', fg: Colors.white, bg: AppColors.owe.withValues(alpha: 0.88)),
+                          if (resumen.teDeben > 0)
+                            _HeroTag(label: 'Te deben', fg: Colors.white, bg: AppColors.owed.withValues(alpha: 0.9)),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _BalanceCirculoRing(
                   linea1: detalle.todoSaldado ? 'Estado' : 'Tu balance',
                   linea2: montoHero,
@@ -334,13 +361,13 @@ class _BalanceCirculoRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 132,
+      height: 118,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Container(
-            width: 128,
-            height: 128,
+            width: 112,
+            height: 112,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white.withValues(alpha: 0.38), width: 3),
@@ -565,7 +592,7 @@ class _ResumenVisual extends StatelessWidget {
         : (detalle.gastado / detalle.presupuestoTotal).clamp(0.0, 1.0);
     final pct = (prog * 100).round();
 
-    final orden = ['Comida', 'Transporte', 'Actividades', 'Hospedaje', 'Compras', 'Otros'];
+    final orden = ['Comida', 'Transporte', 'Actividades', 'Hospedaje', 'Otros'];
     final valores = orden.map((k) => detalle.resumenPorCategoria[k] ?? 0.0).toList();
     final totalCat = valores.fold<double>(0, (a, b) => a + b);
 
@@ -637,8 +664,8 @@ class _ResumenVisual extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 104,
-                height: 104,
+                width: 132,
+                height: 132,
                 child: CustomPaint(
                   painter: _DonutCategoriasPainter(
                     fractions: [
@@ -652,7 +679,7 @@ class _ResumenVisual extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -660,37 +687,22 @@ class _ResumenVisual extends StatelessWidget {
                     for (var i = 0; i < orden.length; i++)
                       if (valores[i] > 0)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 9,
-                                    height: 9,
-                                    decoration: BoxDecoration(
-                                      color: palette[i % palette.length],
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(orden[i], style: AppFonts.label(12.5, weight: FontWeight.w700)),
-                                  ),
-                                  Text(formatoCop(valores[i]), style: AppFonts.amount(12.5)),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: LinearProgressIndicator(
-                                  value: totalCat > 0 ? (valores[i] / totalCat).clamp(0.0, 1.0) : 0,
-                                  minHeight: 5,
-                                  backgroundColor: AppColors.text.withValues(alpha: 0.08),
-                                  color: palette[i % palette.length].withValues(alpha: 0.88),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: palette[i % palette.length],
+                                  shape: BoxShape.circle,
                                 ),
                               ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(orden[i], style: AppFonts.label(12, weight: FontWeight.w700)),
+                              ),
+                              Text(formatoCop(valores[i]), style: AppFonts.amount(12)),
                             ],
                           ),
                         ),
@@ -728,15 +740,20 @@ class _ResumenVisual extends StatelessWidget {
                 ),
               ),
             ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton(
+        Center(
+          child: FilledButton.tonal(
+            style: FilledButton.styleFrom(
+              foregroundColor: AppColors.primaryDark,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.14),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Historial completo se conectará al backend.')),
               );
             },
-            child: Text('Ver historial', style: AppFonts.label(13.5, weight: FontWeight.w700)),
+            child: Text('Ver historial', style: AppFonts.label(14, weight: FontWeight.w800)),
           ),
         ),
       ],

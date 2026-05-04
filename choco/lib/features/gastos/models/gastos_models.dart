@@ -60,9 +60,8 @@ enum TipoGastoForm {
 enum CategoriaGasto {
   comida('Comida'),
   transporte('Transporte'),
-  actividad('Actividad'),
+  actividad('Actividades'),
   hospedaje('Hospedaje'),
-  compras('Compras'),
   otro('Otro');
 
   final String etiqueta;
@@ -82,6 +81,8 @@ class ViajeFinancieroResumen {
   final String idViaje;
   final String? idGrupo;
   final String nombreViaje;
+  /// Clave de destino para assets y exploración (`bogota`, `cartagena`, …).
+  final String? destinoKey;
   final EstadoViajeFinanciero estado;
   final double tuDebes;
   final double teDeben;
@@ -94,6 +95,7 @@ class ViajeFinancieroResumen {
     required this.idViaje,
     this.idGrupo,
     required this.nombreViaje,
+    this.destinoKey,
     required this.estado,
     required this.tuDebes,
     required this.teDeben,
@@ -107,6 +109,7 @@ class ViajeFinancieroResumen {
       idViaje: '${j['idViaje'] ?? j['idGrupo']}',
       idGrupo: j['idGrupo']?.toString(),
       nombreViaje: j['nombreViaje'] as String? ?? 'Viaje',
+      destinoKey: j['destinoKey'] as String?,
       estado: EstadoViajeFinanciero.desdeApi(j['estado'] as String?),
       tuDebes: _toD(j['tuDebes']),
       teDeben: _toD(j['teDeben']),
@@ -246,12 +249,15 @@ class InterpretacionChoco {
   bool get necesitaMasDatos => preguntasPendientes.isNotEmpty;
 }
 
-final NumberFormat _copFormat = NumberFormat.currency(
-  locale: 'es_CO',
-  symbol: r'$',
-  decimalDigits: 0,
-);
+/// Pesos colombianos: símbolo adelante y miles con punto (p. ej. $48.000).
+final NumberFormat _copMiles = NumberFormat('#,##0', 'de_DE');
 
 String formatoCop(double valor) {
-  return _copFormat.format(valor.round());
+  final n = valor.round();
+  final neg = n < 0;
+  final body = _copMiles.format(n.abs());
+  return '${neg ? '-' : ''}\$$body';
 }
+
+/// Incluye sufijo COP cuando haga falta en UI.
+String formatoCopConMoneda(double valor) => '${formatoCop(valor)} COP';

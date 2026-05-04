@@ -4,9 +4,9 @@ import 'package:choco/core/widgets/mobile_app_frame.dart';
 import 'package:choco/features/gastos/screens/gastos_screen.dart';
 import 'package:choco/features/gastos/services/gastos_service.dart';
 import 'package:choco/features/gastos/widgets/choco_assistant_sheet.dart';
-import 'package:choco/features/gastos/widgets/choco_illustration.dart';
+import 'package:choco/core/widgets/choco_nav_logo.dart';
 import 'package:choco/features/home/screens/home_screen.dart';
-import 'package:choco/features/itinerario/screens/ItinerarioScreen.dart';
+import 'package:choco/features/itinerario/screens/itinerario_hub_screen.dart';
 import 'package:choco/features/viajes/screens/feed_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +14,28 @@ import 'package:flutter/material.dart';
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
+  /// Para pantallas hijas (p. ej. Viajes) que necesitan el mismo [GastosService] que la pestaña Gastos.
+  static MainShellState? maybeOf(BuildContext context) =>
+      context.findAncestorStateOfType<MainShellState>();
+
   @override
-  State<MainShell> createState() => _MainShellState();
+  State<MainShell> createState() => MainShellState();
 }
 
-class _MainShellState extends State<MainShell> with SingleTickerProviderStateMixin {
+class MainShellState extends State<MainShell> with SingleTickerProviderStateMixin {
   final GastosService _gastosService = GastosService();
   final GlobalKey<GastosScreenState> _gastosKey = GlobalKey<GastosScreenState>();
+
+  GastosService get gastosService => _gastosService;
+
+  void recargarPestanaGastos() => _gastosKey.currentState?.reload();
+
+  /// Cambia a la pestaña indicada: 0 Inicio, 1 Viajes, 2 Itinerario, 3 Gastos.
+  void cambiarTab(int pageIndex) {
+    if (pageIndex >= 0 && pageIndex <= 3) {
+      setState(() => _pageIndex = pageIndex);
+    }
+  }
 
   /// 0 Inicio, 1 Viajes, 2 Itinerario, 3 Gastos
   int _pageIndex = 0;
@@ -28,16 +43,14 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
   late AnimationController _chocoPulse;
   late Animation<double> _chocoPulseScale;
 
-  static const _itinerarioDemoId = 1;
-
   @override
   void initState() {
     super.initState();
     _chocoPulse = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 2400),
     )..repeat(reverse: true);
-    _chocoPulseScale = Tween<double>(begin: 1.0, end: 1.07).animate(
+    _chocoPulseScale = Tween<double>(begin: 1.0, end: 1.028).animate(
       CurvedAnimation(parent: _chocoPulse, curve: Curves.easeInOut),
     );
   }
@@ -81,7 +94,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
         children: [
           const HomeScreen(),
           const FeedScreen(),
-          const ItinerarioScreen(itinerarioId: _itinerarioDemoId),
+          const ItinerarioHubScreen(),
           GastosScreen(
             key: _gastosKey,
             gastosService: _gastosService,
@@ -92,12 +105,13 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
         color: Colors.transparent,
         child: SafeArea(
           top: false,
+          minimum: EdgeInsets.zero,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 6),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
             child: LayoutBuilder(
               builder: (context, c) {
                 final wide = c.maxWidth > MobileAppFrame.maxWidth + 32;
-                final bar = _DockNavBar(
+                final bar = _FloatingDock(
                   highlightSlot: _highlightSlot(),
                   chocoScale: _chocoPulseScale,
                   onTap: _onNavTap,
@@ -119,13 +133,13 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
   }
 }
 
-class _DockNavBar extends StatelessWidget {
+class _FloatingDock extends StatelessWidget {
   final int highlightSlot;
   final Animation<double> chocoScale;
   final void Function(int slot) onTap;
   final VoidCallback onChocoTap;
 
-  const _DockNavBar({
+  const _FloatingDock({
     required this.highlightSlot,
     required this.chocoScale,
     required this.onTap,
@@ -135,16 +149,21 @@ class _DockNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated.withValues(alpha: 0.96),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border.all(color: AppColors.outlineSoft),
+        color: AppColors.creamLight.withValues(alpha: 0.97),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppColors.text.withValues(alpha: 0.10)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowWarm,
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: Colors.black.withValues(alpha: 0.09),
+            blurRadius: 22,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -204,34 +223,51 @@ class _DockItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primary.withValues(alpha: 0.14) : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 22,
-                color: selected ? AppColors.primaryDark : AppColors.text.withValues(alpha: 0.45),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(22),
+            onTap: onTap,
+              child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              decoration: BoxDecoration(
+                color: selected
+                    ? AppColors.primary.withValues(alpha: 0.14)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppFonts.label(10, weight: selected ? FontWeight.w800 : FontWeight.w600).copyWith(
-                  color: selected ? AppColors.primaryDark : AppColors.text.withValues(alpha: 0.5),
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedScale(
+                    scale: selected ? 1.12 : 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      icon,
+                      size: 22,
+                      color: selected
+                          ? AppColors.primaryDark
+                          : AppColors.text.withValues(alpha: 0.38),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppFonts.label(10.5, weight: selected ? FontWeight.w800 : FontWeight.w500).copyWith(
+                      color: selected
+                          ? AppColors.primaryDark
+                          : AppColors.text.withValues(alpha: 0.42),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -247,55 +283,61 @@ class _ChocoDockButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: GestureDetector(
-        onTap: onTap,
-        child: ScaleTransition(
-          scale: scale,
-          child: Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.35),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-              border: Border.all(color: Colors.white, width: 2.5),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.creamLight,
-                  AppColors.surfaceMuted,
-                ],
-              ),
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                ClipOval(
-                  child: ChocoIllustration(size: 51, borderRadius: 25, variantSeed: 11, fit: BoxFit.cover),
-                ),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
+    return Transform.translate(
+      offset: const Offset(0, -6),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: ScaleTransition(
+              scale: scale,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.creamLight,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.28),
+                      blurRadius: 14,
+                      offset: const Offset(0, 5),
                     ),
-                    child: const Icon(Icons.mic_rounded, size: 11, color: Colors.white),
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.38),
+                    width: 2.0,
                   ),
                 ),
-              ],
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    const ChocoNavLogo(size: 46, fit: BoxFit.contain),
+                    Positioned(
+                      right: -1,
+                      bottom: -1,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        child: const Icon(Icons.mic_rounded, size: 10, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
