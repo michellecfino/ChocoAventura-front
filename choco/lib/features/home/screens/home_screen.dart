@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
               // ── Hero card ─────────────────────────────────────────────
               SliverToBoxAdapter(
@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: 18)),
 
               // ── Acceso rápido ─────────────────────────────────────────
               SliverPadding(
@@ -152,18 +152,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-          AppSpacing.md, topSafe + 18, AppSpacing.md, 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.background,
-            AppColors.creamLight,
-          ],
-        ),
-      ),
+      padding: EdgeInsets.fromLTRB(AppSpacing.md, topSafe + 14, AppSpacing.md, 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -171,29 +160,20 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      isLoggedIn ? 'Hola, $nombre' : 'Hola, viajero',
-                      style: AppFonts.display(26),
-                    ),
-                    const SizedBox(width: 6),
-                    const Text('✈️', style: TextStyle(fontSize: 22)),
-                  ],
-                ),
-                const SizedBox(height: 4),
                 Text(
-                  'Tu próxima aventura empieza aquí',
-                  style: AppFonts.body(
-                    13.5,
-                    color: AppColors.text.withValues(alpha: 0.60),
-                  ),
+                  isLoggedIn ? 'Hola, $nombre' : 'Bienvenido',
+                  style: AppFonts.display(22),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isLoggedIn ? 'Tu próxima aventura te espera' : 'Tu próxima aventura empieza aquí',
+                  style: AppFonts.body(13, color: AppColors.text.withValues(alpha: 0.55)),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          const PerfilAvatarButton(size: 46),
+          const PerfilAvatarButton(size: 42),
         ],
       ),
     );
@@ -298,6 +278,19 @@ class _ViajeHeroCard extends StatelessWidget {
 
   const _ViajeHeroCard({required this.viaje, this.bannerPath});
 
+  String _ctaLabel(ViajeFaseProducto fase) {
+    switch (fase) {
+      case ViajeFaseProducto.explorarActividades:
+        return 'Explorar actividades';
+      case ViajeFaseProducto.esperaGrupoVotacion:
+        return 'Ver estado del grupo';
+      case ViajeFaseProducto.mesaChoco:
+        return 'Ir a la Mesa de Choco';
+      default:
+        return 'Continuar';
+    }
+  }
+
   void _onTap(BuildContext context) {
     // Navegar al swipe de actividades si la fase lo permite
     if (viaje.faseActual == ViajeFaseProducto.explorarActividades) {
@@ -332,82 +325,101 @@ class _ViajeHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _onTap(context),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            SizedBox(
-              height: 180,
-              width: double.infinity,
-              child: bannerPath != null
-                  ? Image.asset(
-                      bannerPath!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, e, s) =>
-                          _HeroBg(nombre: viaje.destinoNombre),
-                    )
-                  : _HeroBg(nombre: viaje.destinoNombre),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.58),
-                    ],
-                    stops: const [0.3, 1.0],
+    final ctaLabel = _ctaLabel(viaje.faseActual);
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _onTap(context),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Stack(
+            children: [
+              SizedBox(
+                height: 200,
+                width: double.infinity,
+                child: bannerPath != null
+                    ? Image.asset(
+                        bannerPath!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, e, s) =>
+                            _HeroBg(nombre: viaje.destinoNombre),
+                      )
+                    : _HeroBg(nombre: viaje.destinoNombre),
+              ),
+              // Gradiente más profundo para legibilidad
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.05),
+                        Colors.black.withValues(alpha: 0.72),
+                      ],
+                      stops: const [0.25, 1.0],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 18,
-              right: 18,
-              bottom: 16,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _PhaseBadge(label: viaje.faseActual.etiquetaCorta),
-                        const SizedBox(height: 5),
-                        Text(
-                          viaje.nombreViaje,
-                          style: AppFonts.display(21).copyWith(
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withValues(alpha: 0.35),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${viaje.destinoNombre}  ·  ${viaje.participantes} personas',
-                          style: AppFonts.body(
-                            12,
-                            color: Colors.white.withValues(alpha: 0.85),
-                          ),
-                        ),
-                      ],
+              // Info abajo
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 14,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _PhaseBadge(label: viaje.faseActual.etiquetaCorta),
+                    const SizedBox(height: 6),
+                    Text(
+                      viaje.nombreViaje,
+                      style: AppFonts.display(20).copyWith(
+                        color: Colors.white,
+                        shadows: [Shadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 8)],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  _ContinuarBtn(),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      '${viaje.destinoNombre}  ·  ${viaje.participantes} personas',
+                      style: AppFonts.body(12, color: Colors.white.withValues(alpha: 0.82)),
+                    ),
+                    const SizedBox(height: 12),
+                    // CTA full-width abajo de los datos
+                    SizedBox(
+                      width: double.infinity,
+                      child: Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: () => _onTap(context),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.play_arrow_rounded, size: 18, color: AppColors.primaryDark),
+                                const SizedBox(width: 6),
+                                Text(
+                                  ctaLabel,
+                                  style: AppFonts.label(13.5, weight: FontWeight.w900)
+                                      .copyWith(color: AppColors.primaryDark),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -463,30 +475,6 @@ class _PhaseBadge extends StatelessWidget {
   }
 }
 
-class _ContinuarBtn extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-      decoration: BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accent.withValues(alpha: 0.35),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Text(
-        'Continuar',
-        style: AppFonts.label(13, weight: FontWeight.w800)
-            .copyWith(color: Colors.white),
-      ),
-    );
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BIENVENIDA CARD (sin viajes)
@@ -552,15 +540,22 @@ class _BienvenidaCard extends StatelessWidget {
               children: [
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      const EdgeInsets.fromLTRB(8, 4, 12, 4),
                   decoration: BoxDecoration(
                     color: AppColors.accent.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    '✦ Nueva aventura',
-                    style: AppFonts.label(11.5, weight: FontWeight.w700)
-                        .copyWith(color: AppColors.accent),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.flight_takeoff_rounded, size: 13, color: AppColors.accent),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Nueva aventura',
+                        style: AppFonts.label(11.5, weight: FontWeight.w700)
+                            .copyWith(color: AppColors.accent),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -640,9 +635,9 @@ class _AccesoRapido extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 2),
-          child: Text('Acceso rápido', style: AppFonts.title(15)),
+          child: Text('Qué hacer', style: AppFonts.title(14, weight: FontWeight.w700)),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _buildGrid(context),
       ],
     );
@@ -652,7 +647,6 @@ class _AccesoRapido extends StatelessWidget {
     final tiles = [
       _Tile(
         icon: Icons.add_location_alt_rounded,
-        emoji: '🗺️',
         titulo: 'Nueva aventura',
         sub: 'Crea un viaje en grupo',
         color: AppColors.primaryDark,
@@ -660,27 +654,27 @@ class _AccesoRapido extends StatelessWidget {
       ),
       _Tile(
         icon: Icons.swipe_rounded,
-        emoji: '✨',
         titulo: 'Explorar planes',
         sub: 'Actividades y destinos',
         color: const Color(0xFF4E7C3A),
         onTap: () => navegarExplorarActividades(context, destinoKey: 'cartagena'),
       ),
       _Tile(
-        icon: Icons.calendar_month_rounded,
-        emoji: '📅',
-        titulo: 'Itinerarios',
-        sub: 'Tu agenda del viaje',
+        icon: Icons.group_add_rounded,
+        titulo: 'Unirme con código',
+        sub: 'Entra al viaje de alguien',
         color: AppColors.accentMuted,
-        onTap: () => MainShell.maybeOf(context)?.cambiarTab(2),
+        onTap: () => _mostrarUnirseConCodigo(context),
       ),
       _Tile(
-        icon: Icons.payments_rounded,
-        emoji: '💸',
-        titulo: 'Gastos',
-        sub: 'Divide y controla',
-        color: AppColors.owed,
-        onTap: () => MainShell.maybeOf(context)?.cambiarTab(3),
+        icon: Icons.chat_bubble_outline_rounded,
+        titulo: 'Hablar con Choco',
+        sub: 'Preguntas y sugerencias',
+        color: AppColors.accent,
+        onTap: () {
+          final shell = MainShell.maybeOf(context);
+          if (shell != null) shell.abrirChoco();
+        },
       ),
     ];
 
@@ -690,9 +684,9 @@ class _AccesoRapido extends StatelessWidget {
       itemCount: tiles.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 1.45,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 1.55,
       ),
       itemBuilder: (_, i) => _TileTap(tile: tiles[i]),
     );
@@ -701,7 +695,6 @@ class _AccesoRapido extends StatelessWidget {
 
 class _Tile {
   final IconData icon;
-  final String emoji;
   final String titulo;
   final String sub;
   final Color color;
@@ -709,12 +702,94 @@ class _Tile {
 
   const _Tile({
     required this.icon,
-    required this.emoji,
     required this.titulo,
     required this.sub,
     required this.color,
     required this.onTap,
   });
+}
+
+void _mostrarUnirseConCodigo(BuildContext context) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36, height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.text.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text('Unirme con código', style: AppFonts.title(18)),
+            const SizedBox(height: 6),
+            Text(
+              'Pide el código al organizador del viaje y escríbelo aquí.',
+              style: AppFonts.body(13.5, color: AppColors.text.withValues(alpha: 0.65), height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'ej: CHOCO-ABC123',
+                hintStyle: AppFonts.body(14, color: AppColors.text.withValues(alpha: 0.4)),
+                filled: true,
+                fillColor: AppColors.surfaceElevated,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.outlineSoft),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AppColors.outlineSoft),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+              textCapitalization: TextCapitalization.characters,
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primaryDark,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Funcionalidad próximamente', style: AppFonts.body(14)),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  );
+                },
+                child: Text('Unirme', style: AppFonts.label(15, weight: FontWeight.w800)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 class _TileTap extends StatelessWidget {
@@ -727,36 +802,29 @@ class _TileTap extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: Material(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(20),
+        color: tile.color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(18),
         child: InkWell(
           onTap: tile.onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(18),
           child: Container(
-            padding: const EdgeInsets.fromLTRB(14, 14, 10, 12),
+            padding: const EdgeInsets.fromLTRB(12, 12, 10, 10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.outlineSoft),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowWarm,
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: tile.color.withValues(alpha: 0.18)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: tile.color.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: tile.color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(tile.icon, size: 20, color: tile.color),
                   ),
-                  child: Text(tile.emoji, style: const TextStyle(fontSize: 18)),
-                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

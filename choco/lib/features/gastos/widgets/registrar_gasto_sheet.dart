@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:choco/app/colors.dart';
 import 'package:choco/app/fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../models/gastos_models.dart';
 import '../services/gastos_service.dart';
-import 'choco_illustration.dart';
 
 Future<void> mostrarRegistrarGastoSheet(
   BuildContext context, {
@@ -57,21 +55,13 @@ class _RegistrarGastoForm extends StatefulWidget {
   State<_RegistrarGastoForm> createState() => _RegistrarGastoFormState();
 }
 
-class _RegistrarGastoFormState extends State<_RegistrarGastoForm>
-    with SingleTickerProviderStateMixin {
+class _RegistrarGastoFormState extends State<_RegistrarGastoForm> {
   final _formKey = GlobalKey<FormState>();
   final _desc = TextEditingController();
   final _monto = TextEditingController();
   final _otroDetalle = TextEditingController();
   final _montosLista = TextEditingController();
   final _porcentajesLista = TextEditingController();
-
-  late TabController _tabs;
-
-  final stt.SpeechToText _speechVoz = stt.SpeechToText();
-  bool _speechVozOk = false;
-  bool _escuchandoVoz = false;
-  final TextEditingController _textoVoz = TextEditingController();
 
   TipoGastoForm _tipo = TipoGastoForm.individual;
   CategoriaGasto _cat = CategoriaGasto.comida;
@@ -86,100 +76,10 @@ class _RegistrarGastoFormState extends State<_RegistrarGastoForm>
   void initState() {
     super.initState();
     _viajeSel = widget.viajePrefijado;
-    final idx = widget.initialTab.clamp(0, 1);
-    _tabs = TabController(length: 2, vsync: this, initialIndex: idx);
-    _initSpeechVoz();
-  }
-
-  Future<void> _initSpeechVoz() async {
-    try {
-      final ok = await _speechVoz.initialize(
-        onStatus: (s) {
-          if (!mounted) return;
-          if (s == 'done' || s == 'notListening') {
-            setState(() => _escuchandoVoz = false);
-          }
-        },
-        onError: (_) {
-          if (mounted) setState(() => _escuchandoVoz = false);
-        },
-      );
-      if (mounted) setState(() => _speechVozOk = ok);
-    } catch (_) {
-      if (mounted) setState(() => _speechVozOk = false);
-    }
-  }
-
-  Future<void> _alternarVozGasto() async {
-    if (!_speechVozOk) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No pude activar el micrófono. Escribe lo que gastaste.', style: AppFonts.body(14))),
-        );
-      }
-      return;
-    }
-    if (_escuchandoVoz) {
-      await _speechVoz.stop();
-      if (mounted) setState(() => _escuchandoVoz = false);
-      return;
-    }
-    setState(() => _escuchandoVoz = true);
-    try {
-      await _speechVoz.listen(
-        onResult: (r) {
-          if (!mounted) return;
-          setState(() {
-            _textoVoz.text = r.recognizedWords;
-            _textoVoz.selection = TextSelection.fromPosition(TextPosition(offset: _textoVoz.text.length));
-          });
-        },
-        localeId: 'es_CO',
-        listenOptions: stt.SpeechListenOptions(
-          partialResults: true,
-          cancelOnError: true,
-          listenMode: stt.ListenMode.confirmation,
-        ),
-      );
-    } catch (_) {
-      if (mounted) setState(() => _escuchandoVoz = false);
-    }
-  }
-
-  Future<void> _procesarVozConChoco() async {
-    if (_viajeSel == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Elige primero el viaje arriba o en la pestaña Manual.')),
-      );
-      return;
-    }
-    final t = _textoVoz.text.trim();
-    if (t.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Cuéntale a Choco qué gastaste o pulsa el micrófono.', style: AppFonts.body(14))),
-      );
-      return;
-    }
-    final interp = widget.service.interpretarTextoLibre(t);
-    await mostrarInterpretacionChoco(
-      context,
-      data: interp,
-      service: widget.service,
-      viaje: _viajeSel!,
-      alGuardar: widget.alGuardar,
-      cerrarPadre: () {
-        if (Navigator.canPop(context)) Navigator.pop(context);
-      },
-    );
   }
 
   @override
   void dispose() {
-    try {
-      _speechVoz.stop();
-    } catch (_) {}
-    _textoVoz.dispose();
-    _tabs.dispose();
     _desc.dispose();
     _monto.dispose();
     _otroDetalle.dispose();
@@ -315,27 +215,7 @@ class _RegistrarGastoFormState extends State<_RegistrarGastoForm>
             ],
           ),
         ),
-        TabBar(
-          controller: _tabs,
-          labelStyle: AppFonts.label(13, weight: FontWeight.w800),
-          unselectedLabelStyle: AppFonts.label(13, weight: FontWeight.w600),
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.text.withValues(alpha: 0.55),
-          indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'Manual'),
-            Tab(text: 'Voz con Choco'),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: _tabs,
-            children: [
-              _panelManual(),
-              _panelVozConChoco(),
-            ],
-          ),
-        ),
+        Expanded(child: _panelManual()),
       ],
     );
   }
@@ -523,118 +403,6 @@ class _RegistrarGastoFormState extends State<_RegistrarGastoForm>
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _panelVozConChoco() {
-    final viajes = widget.service.viajesMockActuales();
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (widget.viajePrefijado == null) ...[
-            Text('¿A qué viaje va?', style: AppFonts.body(13.5, color: AppColors.text.withValues(alpha: 0.78))),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<ViajeFinancieroResumen>(
-              key: ValueKey('voz_${_viajeSel?.idViaje ?? 'viaje'}'),
-              decoration: _decoration('Viaje'),
-              items: viajes
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e.nombreViaje, style: AppFonts.body(14))))
-                  .toList(),
-              initialValue: _viajeSel,
-              onChanged: (v) => setState(() => _viajeSel = v),
-            ),
-            const SizedBox(height: 14),
-          ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipOval(
-                child: ChocoIllustration(
-                  size: 64,
-                  borderRadius: 32,
-                  variantSeed: 7,
-                  fit: BoxFit.cover,
-                  preferPrimaryOnly: true,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Cuéntale a Choco', style: AppFonts.title(16)),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Ej: «Taxi 40 mil para todos, pagué yo». Choco interpreta y confirma antes de guardar.',
-                      style: AppFonts.body(13, color: AppColors.text.withValues(alpha: 0.76), height: 1.35),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (_escuchandoVoz)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                'Te escucho…',
-                textAlign: TextAlign.center,
-                style: AppFonts.body(13, color: AppColors.text.withValues(alpha: 0.72)),
-              ),
-            ),
-          TextField(
-            controller: _textoVoz,
-            minLines: 2,
-            maxLines: 4,
-            style: AppFonts.body(14),
-            textInputAction: TextInputAction.send,
-            onSubmitted: (_) => _procesarVozConChoco(),
-            decoration: InputDecoration(
-              hintText: 'Escribe o dicta tu gasto…',
-              fillColor: AppColors.creamLight,
-              filled: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    tooltip: _escuchandoVoz ? 'Detener' : 'Hablar',
-                    onPressed: _alternarVozGasto,
-                    icon: Icon(
-                      _escuchandoVoz ? Icons.stop_rounded : Icons.mic_rounded,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'Enviar a Choco',
-                    onPressed: _procesarVozConChoco,
-                    icon: Icon(Icons.send_rounded, color: AppColors.primaryDark),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primaryDark,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            onPressed: _procesarVozConChoco,
-            child: Text('Interpretar con Choco', style: AppFonts.label(14, weight: FontWeight.w800)),
-          ),
-          const SizedBox(height: 10),
-          TextButton(
-            onPressed: () => _tabs.animateTo(0),
-            child: Text('Prefiero el formulario manual', style: AppFonts.label(13.5)),
-          ),
-        ],
       ),
     );
   }

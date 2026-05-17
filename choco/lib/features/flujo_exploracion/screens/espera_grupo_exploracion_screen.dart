@@ -1,6 +1,7 @@
 import 'package:choco/app/colors.dart';
 import 'package:choco/app/fonts.dart';
 import 'package:choco/core/assets/asset_resolver.dart' show AssetResolver, nombreLegibleDestino;
+import 'package:choco/features/gastos/widgets/choco_illustration.dart';
 import 'package:choco/features/viajes/data/viajes_mock_data.dart';
 import 'package:choco/features/viajes/models/grupo_viaje_model.dart';
 import 'package:choco/features/viajes/screens/mesa_choco_screen.dart';
@@ -151,20 +152,20 @@ class _EsperaGrupoExploracionScreenState extends State<EsperaGrupoExploracionScr
 
           // ── Mensaje contextual (compacto) ───────────────────────────────────
           if (widget.esUltimoEnVotar)
-            _MensajeCompacto(
-              icon: '🎉',
-              texto: '¡Listo! Choco ya tiene los votos del grupo.',
-              color: Colors.green.shade600,
+            _MensajeChoco(
+              texto: '¡Listo! Tengo los votos del grupo. Vamos a la Mesa de Choco.',
+              color: Colors.green.shade700,
+            )
+          else if (faltanN <= 0)
+            _MensajeChoco(
+              texto: 'Todo el grupo exploró. La Mesa de Choco está lista.',
+              color: Colors.green.shade700,
             )
           else
             _MensajeCompacto(
-              icon: '⏳',
-              texto: faltanN > 0
-                  ? 'Faltan $faltanN de $total personas por explorar.'
-                  : '¡Todo el grupo ya exploró! La Mesa de Choco está lista.',
-              color: faltanN > 0
-                  ? AppColors.text.withValues(alpha: 0.65)
-                  : Colors.green.shade600,
+              icon: Icons.hourglass_top_rounded,
+              texto: 'Faltan $faltanN de $total personas por explorar.',
+              color: AppColors.text.withValues(alpha: 0.65),
             ),
 
           const SizedBox(height: 18),
@@ -185,22 +186,26 @@ class _EsperaGrupoExploracionScreenState extends State<EsperaGrupoExploracionScr
             width: double.infinity,
             child: FilledButton.icon(
               style: FilledButton.styleFrom(
-                backgroundColor: _mesaHabilitada
-                    ? AppColors.primaryDark
-                    : AppColors.outlineSoft,
+                backgroundColor: AppColors.primaryDark,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: AppColors.outlineSoft,
-                disabledForegroundColor: AppColors.text.withValues(alpha: 0.40),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                disabledForegroundColor: AppColors.text.withValues(alpha: 0.45),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
+                elevation: 2,
               ),
               onPressed: _mesaHabilitada ? () => _irAMesa() : null,
-              icon: const Icon(Icons.table_restaurant_rounded, size: 20),
+              icon: Icon(
+                Icons.table_restaurant_rounded,
+                size: 20,
+                color: _mesaHabilitada ? Colors.white : AppColors.text.withValues(alpha: 0.45),
+              ),
               label: Text(
                 'Ir a la Mesa de Choco',
-                style: AppFonts.label(15, weight: FontWeight.w900)
-                    .copyWith(color: Colors.white),
+                style: AppFonts.label(15, weight: FontWeight.w900).copyWith(
+                  color: _mesaHabilitada ? Colors.white : AppColors.text.withValues(alpha: 0.45),
+                ),
               ),
             ),
           ),
@@ -247,8 +252,36 @@ class _EsperaGrupoExploracionScreenState extends State<EsperaGrupoExploracionScr
 // Widgets auxiliares
 // ─────────────────────────────────────────────────────────────────────────────
 
+class _MensajeChoco extends StatelessWidget {
+  final String texto;
+  final Color color;
+
+  const _MensajeChoco({required this.texto, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        children: [
+          const ChocoIllustration(size: 36, borderRadius: 10),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(texto, style: AppFonts.body(13.5, height: 1.35)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MensajeCompacto extends StatelessWidget {
-  final String icon;
+  final IconData icon;
   final String texto;
   final Color color;
 
@@ -269,7 +302,7 @@ class _MensajeCompacto extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(icon, style: const TextStyle(fontSize: 18)),
+          Icon(icon, size: 18, color: color),
           const SizedBox(width: 10),
           Expanded(
             child: Text(texto, style: AppFonts.body(13.5, height: 1.35)),

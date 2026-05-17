@@ -105,44 +105,24 @@ class GastosScreenState extends State<GastosScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'fab_gasto_voz',
-            backgroundColor: AppColors.primaryDark,
-            foregroundColor: Colors.white,
-            onPressed: () => mostrarRegistrarGastoSheet(
-              context,
-              viajePrefijado: null,
-              service: _service,
-              alGuardar: _refrescar,
-              initialTab: 1,
-            ),
-            child: const Icon(Icons.mic_rounded, size: 20),
-          ),
-          const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'fab_gasto_manual',
-            onPressed: () => mostrarRegistrarGastoSheet(
-              context,
-              viajePrefijado: null,
-              service: _service,
-              alGuardar: _refrescar,
-              initialTab: 0,
-            ),
-            backgroundColor: AppColors.primaryDark,
-            foregroundColor: Colors.white,
-            elevation: 4,
-            highlightElevation: 7,
-            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
-            label: Text(
-              'Gasto',
-              style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
-            ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_gasto_manual',
+        onPressed: () => mostrarRegistrarGastoSheet(
+          context,
+          viajePrefijado: null,
+          service: _service,
+          alGuardar: _refrescar,
+          initialTab: 0,
+        ),
+        backgroundColor: AppColors.primaryDark,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        highlightElevation: 7,
+        icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
+        label: Text(
+          'Gasto',
+          style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: RefreshIndicator(
@@ -367,16 +347,22 @@ class _ViajeCardRica extends StatelessWidget {
   }
 
   Widget _miniChip(String label) {
+    final isDebes = label == 'Debes';
+    final isSaldado = label == 'Saldado';
+    final bgColor = isSaldado
+        ? Colors.green.shade700.withValues(alpha: 0.88)
+        : isDebes
+            ? AppColors.owe.withValues(alpha: 0.92)
+            : AppColors.owed.withValues(alpha: 0.88);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.28),
+        color: bgColor,
         borderRadius: BorderRadius.circular(AppRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.42)),
       ),
       child: Text(
         label,
-        style: AppFonts.label(10, weight: FontWeight.w800).copyWith(color: Colors.white),
+        style: AppFonts.label(10.5, weight: FontWeight.w800).copyWith(color: Colors.white),
       ),
     );
   }
@@ -446,15 +432,13 @@ class _ViajeCardRica extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            for (var i = 0; i < estadoTags.length; i++) ...[
-                              if (i > 0) const SizedBox(height: 4),
-                              estadoTags[i],
-                            ],
-                          ],
+                        Flexible(
+                          child: Wrap(
+                            alignment: WrapAlignment.end,
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: estadoTags,
+                          ),
                         ),
                       ],
                     ),
@@ -505,7 +489,7 @@ class _ViajeCardRica extends StatelessWidget {
                         value: (viaje.hasGastado / viaje.presupuesto).clamp(0.0, 1.0),
                         minHeight: 9,
                         backgroundColor: AppColors.creamLight,
-                        color: AppColors.primaryDark,
+                        color: (viaje.hasGastado / viaje.presupuesto) > 0.85 ? AppColors.owe : AppColors.accent,
                       ),
                     ),
                   ],

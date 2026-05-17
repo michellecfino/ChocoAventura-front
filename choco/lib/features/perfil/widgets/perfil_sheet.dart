@@ -159,15 +159,22 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.fromLTRB(8, 4, 10, 4),
       decoration: BoxDecoration(
         color: AppColors.primarySoft,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        '✦ Explorador',
-        style: AppFonts.label(11.5, weight: FontWeight.w700)
-            .copyWith(color: AppColors.primaryDark),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.explore_rounded, size: 12, color: AppColors.primaryDark),
+          const SizedBox(width: 5),
+          Text(
+            'Explorador',
+            style: AppFonts.label(11.5, weight: FontWeight.w700)
+                .copyWith(color: AppColors.primaryDark),
+          ),
+        ],
       ),
     );
   }

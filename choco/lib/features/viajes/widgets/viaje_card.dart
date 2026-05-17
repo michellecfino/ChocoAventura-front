@@ -167,9 +167,16 @@ class ViajeCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      'Fase: ${viaje.faseActual.etiquetaCorta}',
-                      style: AppFonts.label(11.5, weight: FontWeight.w800).copyWith(color: AppColors.primaryDark),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        viaje.faseActual.etiquetaCorta,
+                        style: AppFonts.label(11.5, weight: FontWeight.w800).copyWith(color: AppColors.primaryDark),
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Row(

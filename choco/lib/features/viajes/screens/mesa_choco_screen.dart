@@ -2,8 +2,10 @@ import 'package:choco/app/colors.dart';
 import 'package:choco/app/fonts.dart';
 import 'package:choco/core/assets/asset_resolver.dart' show AssetResolver;
 import 'package:choco/core/assets/asset_path_util.dart';
+import 'package:choco/features/gastos/widgets/choco_illustration.dart';
 import 'package:choco/features/viajes/screens/resumen_actividades_screen.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Modelos internos
@@ -180,36 +182,65 @@ double _parseDuracionH(String dur) {
 
 /// Selecciona las actividades finales a partir del ranking de categorías.
 /// Para un viaje de [diasViaje] días se toman ~2 actividades por día.
+/// Selecciona actividades finales a partir de las categorías rankeadas.
+/// Meta: ~1-2 actividades principales por día (el itinerario agrega bloques logísticos).
 List<ResumenActividad> _seleccionarActividadesFinales({
   required List<_CategoriaRanking> categoriasRankeadas,
   required int diasViaje,
 }) {
-  final totalActividades = (diasViaje * 2).clamp(3, 8);
+  // Para demo: apuntamos a ~6 actividades principales en 4 días (~1-2 por día)
+  // El itinerario agrega desayunos, traslados y planes de noche automáticamente.
+  final totalActividades = (diasViaje + 2).clamp(4, 9);
   final result = <ResumenActividad>[];
 
   if (categoriasRankeadas.isEmpty) return result;
 
-  // Distribuir: más del top ranked, menos de los últimos
-  int i = 0;
-  while (result.length < totalActividades && i < 100) {
-    for (final cat in categoriasRankeadas) {
-      if (result.length >= totalActividades) break;
-      // índice de actividad dentro de la categoría
-      final actIdx = i ~/ categoriasRankeadas.length;
-      if (actIdx < cat.actividades.length) {
-        final act = cat.actividades[actIdx];
-        // Evitar duplicados
-        if (!result.any((r) => r.nombre == act.nombre)) {
-          result.add(ResumenActividad(
-            nombre: act.nombre,
-            categoria: act.emoji,
-            precio: act.precio,
-            duracion: act.duracion,
-          ));
-        }
+  // Ronda 1: prioridad a la 1ª actividad de cada categoría rankeada (las más votadas)
+  for (final cat in categoriasRankeadas) {
+    if (result.length >= totalActividades) break;
+    if (cat.actividades.isNotEmpty) {
+      final act = cat.actividades.first;
+      if (!result.any((r) => r.nombre == act.nombre)) {
+        result.add(ResumenActividad(
+          nombre: act.nombre,
+          categoria: act.emoji,
+          precio: act.precio,
+          duracion: act.duracion,
+        ));
       }
     }
-    i++;
+  }
+
+  // Ronda 2: segundas actividades de cada categoría para completar el total
+  for (final cat in categoriasRankeadas) {
+    if (result.length >= totalActividades) break;
+    if (cat.actividades.length > 1) {
+      final act = cat.actividades[1];
+      if (!result.any((r) => r.nombre == act.nombre)) {
+        result.add(ResumenActividad(
+          nombre: act.nombre,
+          categoria: act.emoji,
+          precio: act.precio,
+          duracion: act.duracion,
+        ));
+      }
+    }
+  }
+
+  // Ronda 3: terceras actividades si aún faltan
+  for (final cat in categoriasRankeadas) {
+    if (result.length >= totalActividades) break;
+    if (cat.actividades.length > 2) {
+      final act = cat.actividades[2];
+      if (!result.any((r) => r.nombre == act.nombre)) {
+        result.add(ResumenActividad(
+          nombre: act.nombre,
+          categoria: act.emoji,
+          precio: act.precio,
+          duracion: act.duracion,
+        ));
+      }
+    }
   }
 
   return result;
@@ -270,24 +301,60 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
 
   void _quitar(int i) => setState(() => _ranking[i] = null);
 
+  void _moverArriba(int i) {
+    if (i <= 0) return;
+    setState(() {
+      final tmp = _ranking[i - 1];
+      _ranking[i - 1] = _ranking[i];
+      _ranking[i] = tmp;
+    });
+  }
+
+  void _moverAbajo(int i) {
+    if (i >= 4) return;
+    setState(() {
+      final tmp = _ranking[i + 1];
+      _ranking[i + 1] = _ranking[i];
+      _ranking[i] = tmp;
+    });
+  }
+
+  /// Coloca categoría en slot específico (drag desde pool o desde otro slot).
+  /// Si la categoría ya está en otro slot, intercambia posiciones.
+  void _colocarEnSlot(int slot, _CategoriaRanking c) {
+    setState(() {
+      final actualEnDestino = _ranking[slot];
+      // ¿Venía de otro slot?
+      final origen = _ranking.indexOf(c);
+      if (origen != -1) {
+        _ranking[origen] = actualEnDestino;
+      }
+      _ranking[slot] = c;
+    });
+  }
+
   void _confirmar() {
     final rankeadas = _ranking.whereType<_CategoriaRanking>().toList();
-
-    // Determinar días del viaje (4 para demo, 3 por defecto)
     const diasViaje = 4;
-
     final actividadesFinales = _seleccionarActividadesFinales(
       categoriasRankeadas: rankeadas,
       diasViaje: diasViaje,
     );
 
+    // Transición breve: Choco procesando
     Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => ResumenActividadesScreen(
-        viajeId: widget.viajeId,
-        nombreViaje: widget.nombreViaje,
-        destinoKey: widget.destinoKey,
-        actividadesElegidas: actividadesFinales,
-        diasViaje: diasViaje,
+      builder: (_) => _ChocoProcessingScreen(
+        onDone: () => Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (_) => ResumenActividadesScreen(
+              viajeId: widget.viajeId,
+              nombreViaje: widget.nombreViaje,
+              destinoKey: widget.destinoKey,
+              actividadesElegidas: actividadesFinales,
+              diasViaje: diasViaje,
+            ),
+          ),
+        ),
       ),
     ));
   }
@@ -310,26 +377,36 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
             ),
           ),
 
-          // ── Mensaje Choco (conciso) ───────────────────────────────────────
+          // ── Mensaje Choco (consenso grupal) ──────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.fromLTRB(12, 10, 14, 10),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.18)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('🍫', style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 10),
+                    const ChocoIllustration(size: 38, borderRadius: 10),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        'Ordena las categorías que más quieres en tu viaje.',
-                        style: AppFonts.body(13.5, height: 1.35),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Ya vi lo que le gustó al grupo.',
+                            style: AppFonts.label(13, weight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Ahora ordena los tipos de plan para cerrar el consenso. Yo selecciono las actividades finales según esto.',
+                            style: AppFonts.body(12.5, height: 1.35, color: AppColors.text.withValues(alpha: 0.75)),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -341,28 +418,58 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
           // ── Ranking de categorías ────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text('Tu ranking', style: AppFonts.title(16)),
+                      Text('Prioridad del grupo', style: AppFonts.title(15)),
                       const SizedBox(width: 8),
-                      Text(
-                        '$_rankingLleno/5',
-                        style: AppFonts.body(13,
-                            color: AppColors.text.withValues(alpha: 0.50)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryDark.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '$_rankingLleno/5',
+                          style: AppFonts.label(11, weight: FontWeight.w700).copyWith(color: AppColors.primaryDark),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   ...List.generate(
                     5,
-                    (i) => _RankingSlot(
-                      posicion: i + 1,
-                      categoria: _ranking[i],
-                      onQuitar: () => _quitar(i),
+                    (i) => DragTarget<_CategoriaRanking>(
+                      onWillAcceptWithDetails: (_) => true,
+                      onAcceptWithDetails: (d) => _colocarEnSlot(i, d.data),
+                      builder: (context, candidates, rejected) {
+                        final dragOver = candidates.isNotEmpty;
+                        final cat = _ranking[i];
+                        Widget slot = _RankingSlot(
+                          posicion: i + 1,
+                          categoria: cat,
+                          dragOver: dragOver,
+                          onQuitar: () => _quitar(i),
+                          onSubir: cat != null && i > 0 ? () => _moverArriba(i) : null,
+                          onBajar: cat != null && i < 4 && _ranking[i + 1] != null ? () => _moverAbajo(i) : null,
+                        );
+                        // Si hay categoría, hacerlo arrastrable también para reordenar
+                        if (cat != null) {
+                          slot = LongPressDraggable<_CategoriaRanking>(
+                            data: cat,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: SizedBox(width: 280, child: _RankingSlot(posicion: i + 1, categoria: cat, dragOver: false, onQuitar: () {})),
+                            ),
+                            childWhenDragging: Opacity(opacity: 0.35, child: slot),
+                            child: slot,
+                          );
+                        }
+                        return slot;
+                      },
                     ),
                   ),
                 ],
@@ -373,20 +480,17 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
           // ── Pool de categorías ───────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Tipos de plan disponibles',
-                      style: AppFonts.title(15)),
-                  const SizedBox(height: 4),
+                  Text('Tipos de plan', style: AppFonts.title(15)),
+                  const SizedBox(height: 2),
                   Text(
-                    'Toca para agregar al ranking. Toca un slot para quitar.',
-                    style: AppFonts.body(12.5,
-                        color: AppColors.text.withValues(alpha: 0.60),
-                        height: 1.35),
+                    'Toca para agregar o mantén presionado y arrastra al ranking',
+                    style: AppFonts.body(11.5, color: AppColors.text.withValues(alpha: 0.55)),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -405,11 +509,22 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
                   final c = _pool[i];
                   final enRanking = _ranking.contains(c);
                   final lleno = _rankingLleno >= 5;
-                  return _CategoriaChip(
+                  final chip = _CategoriaChip(
                     categoria: c,
                     enRanking: enRanking,
                     disabled: lleno && !enRanking,
                     onTap: enRanking || lleno ? null : () => _agregar(c),
+                  );
+                  // Solo categorías que NO están en el ranking se pueden arrastrar al ranking
+                  if (enRanking) return chip;
+                  return LongPressDraggable<_CategoriaRanking>(
+                    data: c,
+                    feedback: Material(
+                      color: Colors.transparent,
+                      child: SizedBox(width: 170, height: 110, child: chip),
+                    ),
+                    childWhenDragging: Opacity(opacity: 0.4, child: chip),
+                    child: chip,
                   );
                 },
                 childCount: _pool.length,
@@ -427,34 +542,27 @@ class _MesaChocoScreenState extends State<MesaChocoScreen> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text(
-                        'Elige al menos una categoría para continuar.',
+                        'Elige al menos una categoría para cerrar el consenso.',
                         textAlign: TextAlign.center,
-                        style: AppFonts.body(13,
-                            color: AppColors.text.withValues(alpha: 0.60)),
+                        style: AppFonts.body(13, color: AppColors.text.withValues(alpha: 0.60)),
                       ),
                     ),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
-                        backgroundColor: _listoParaContinuar
-                            ? AppColors.primaryDark
-                            : AppColors.outlineSoft,
+                        backgroundColor: _listoParaContinuar ? AppColors.primaryDark : AppColors.outlineSoft,
                         foregroundColor: Colors.white,
                         disabledBackgroundColor: AppColors.outlineSoft,
-                        disabledForegroundColor:
-                            AppColors.text.withValues(alpha: 0.40),
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18)),
+                        disabledForegroundColor: AppColors.text.withValues(alpha: 0.40),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       ),
                       onPressed: _listoParaContinuar ? _confirmar : null,
-                      icon: const Icon(Icons.check_circle_rounded, size: 22),
+                      icon: const Icon(Icons.check_rounded, size: 20),
                       label: Text(
-                        'Listo, armemos el plan',
-                        style: AppFonts.label(15, weight: FontWeight.w900)
-                            .copyWith(color: Colors.white),
+                        'Cerrar consenso del grupo',
+                        style: AppFonts.label(15, weight: FontWeight.w900).copyWith(color: Colors.white),
                       ),
                     ),
                   ),
@@ -537,10 +645,16 @@ class _Header extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    'Mesa de Choco  🍫',
-                    style: AppFonts.label(10.5, weight: FontWeight.w700)
-                        .copyWith(color: Colors.white),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.table_restaurant_rounded, size: 11, color: Colors.white),
+                      const SizedBox(width: 5),
+                      Text(
+                        'Mesa de Choco',
+                        style: AppFonts.label(10.5, weight: FontWeight.w700).copyWith(color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -578,12 +692,18 @@ class _FallbackBg extends StatelessWidget {
 class _RankingSlot extends StatelessWidget {
   final int posicion;
   final _CategoriaRanking? categoria;
+  final bool dragOver;
   final VoidCallback onQuitar;
+  final VoidCallback? onSubir;
+  final VoidCallback? onBajar;
 
   const _RankingSlot({
     required this.posicion,
     required this.categoria,
+    this.dragOver = false,
     required this.onQuitar,
+    this.onSubir,
+    this.onBajar,
   });
 
   Color get _posColor {
@@ -598,52 +718,45 @@ class _RankingSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 7),
+      padding: const EdgeInsets.only(bottom: 6),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: categoria != null
-              ? AppColors.surfaceElevated
-              : AppColors.creamLight,
-          borderRadius: BorderRadius.circular(14),
+          color: dragOver
+              ? AppColors.primary.withValues(alpha: 0.16)
+              : categoria != null
+                  ? AppColors.surfaceElevated
+                  : AppColors.creamLight,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: categoria != null
-                ? _posColor.withValues(alpha: 0.55)
-                : AppColors.outlineSoft,
-            width: categoria != null ? 1.5 : 1,
+            color: dragOver
+                ? AppColors.primaryDark
+                : categoria != null
+                    ? _posColor.withValues(alpha: 0.50)
+                    : AppColors.outlineSoft,
+            width: dragOver ? 2 : (categoria != null ? 1.5 : 1),
           ),
           boxShadow: categoria != null
-              ? [
-                  BoxShadow(
-                      color: _posColor.withValues(alpha: 0.10),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2))
-                ]
+              ? [BoxShadow(color: _posColor.withValues(alpha: 0.10), blurRadius: 6, offset: const Offset(0, 2))]
               : [],
         ),
         child: Row(
           children: [
-            SizedBox(
-              width: 30,
-              height: 30,
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: _posColor.withValues(alpha: categoria != null ? 0.15 : 0.07),
+                shape: BoxShape.circle,
+              ),
               child: Center(
                 child: Text(
-                  posicion == 1
-                      ? '🥇'
-                      : posicion == 2
-                          ? '🥈'
-                          : posicion == 3
-                              ? '🥉'
-                              : '$posicion',
-                  style: posicion <= 3
-                      ? const TextStyle(fontSize: 16)
-                      : AppFonts.label(13, weight: FontWeight.w900)
-                            .copyWith(
-                                color: categoria != null
-                                    ? _posColor
-                                    : AppColors.text.withValues(alpha: 0.35)),
+                  '$posicion',
+                  style: AppFonts.label(12, weight: FontWeight.w900).copyWith(
+                    color: categoria != null ? _posColor : AppColors.text.withValues(alpha: 0.35),
+                  ),
                 ),
               ),
             ),
@@ -652,8 +765,7 @@ class _RankingSlot extends StatelessWidget {
               child: categoria != null
                   ? Row(
                       children: [
-                        Text(categoria!.emoji,
-                            style: const TextStyle(fontSize: 18)),
+                        Text(categoria!.emoji, style: const TextStyle(fontSize: 16)),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -662,16 +774,13 @@ class _RankingSlot extends StatelessWidget {
                             children: [
                               Text(
                                 categoria!.nombre,
-                                style: AppFonts.label(13,
-                                    weight: FontWeight.w800),
+                                style: AppFonts.label(12.5, weight: FontWeight.w800),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                '${categoria!.cantidad} act. · ${categoria!.precioPromedio}',
-                                style: AppFonts.body(11,
-                                    color: AppColors.text
-                                        .withValues(alpha: 0.60)),
+                                '${categoria!.cantidad} planes · ${categoria!.precioPromedio}',
+                                style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.58)),
                               ),
                             ],
                           ),
@@ -679,18 +788,37 @@ class _RankingSlot extends StatelessWidget {
                       ],
                     )
                   : Text(
-                      'Toca una categoría',
-                      style: AppFonts.body(13,
-                          color: AppColors.text.withValues(alpha: 0.38)),
+                      dragOver ? 'Suelta aquí' : 'Vacío · arrastra una categoría',
+                      style: AppFonts.body(
+                        12.5,
+                        color: dragOver ? AppColors.primaryDark : AppColors.text.withValues(alpha: 0.42),
+                        weight: dragOver ? FontWeight.w800 : FontWeight.w500,
+                      ),
                     ),
             ),
-            if (categoria != null)
+            if (categoria != null) ...[
+              // Flechas de reorden
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: onSubir,
+                    child: Icon(Icons.keyboard_arrow_up_rounded, size: 18,
+                        color: onSubir != null ? AppColors.primaryDark.withValues(alpha: 0.65) : AppColors.outlineSoft),
+                  ),
+                  GestureDetector(
+                    onTap: onBajar,
+                    child: Icon(Icons.keyboard_arrow_down_rounded, size: 18,
+                        color: onBajar != null ? AppColors.primaryDark.withValues(alpha: 0.65) : AppColors.outlineSoft),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 4),
               GestureDetector(
                 onTap: onQuitar,
-                child: Icon(Icons.remove_circle_outline_rounded,
-                    size: 19,
-                    color: AppColors.text.withValues(alpha: 0.40)),
+                child: Icon(Icons.close_rounded, size: 17, color: AppColors.text.withValues(alpha: 0.40)),
               ),
+            ],
           ],
         ),
       ),
@@ -770,6 +898,114 @@ class _CategoriaChip extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pantalla de procesamiento de Choco (transición breve 2-3s)
+// ─────────────────────────────────────────────────────────────────────────────
+class _ChocoProcessingScreen extends StatefulWidget {
+  final VoidCallback onDone;
+
+  const _ChocoProcessingScreen({required this.onDone});
+
+  @override
+  State<_ChocoProcessingScreen> createState() => _ChocoProcessingScreenState();
+}
+
+class _ChocoProcessingScreenState extends State<_ChocoProcessingScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  int _step = 0;
+  Timer? _timer;
+
+  static const _pasos = [
+    'Cruzando gustos del grupo...',
+    'Ajustando a tiempos y presupuesto...',
+    '¡Selección lista!',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
+      ..repeat();
+    _timer = Timer.periodic(const Duration(milliseconds: 900), (t) {
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+      setState(() => _step = (_step + 1) % _pasos.length);
+      if (_step == _pasos.length - 1) {
+        t.cancel();
+        Future.delayed(const Duration(milliseconds: 900), () {
+          if (mounted) widget.onDone();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Choco con halo animado
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                RotationTransition(
+                  turns: _ctrl,
+                  child: Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: SweepGradient(
+                        colors: [
+                          AppColors.primary.withValues(alpha: 0.0),
+                          AppColors.primary.withValues(alpha: 0.5),
+                          AppColors.primaryDark,
+                          AppColors.primary.withValues(alpha: 0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.background),
+                ),
+                const ChocoIllustration(size: 84, borderRadius: 42),
+              ],
+            ),
+            const SizedBox(height: 28),
+            Text('Choco está armando el plan', style: AppFonts.display(20)),
+            const SizedBox(height: 12),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Text(
+                _pasos[_step],
+                key: ValueKey(_step),
+                style: AppFonts.body(15, color: AppColors.text.withValues(alpha: 0.72)),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
       ),
     );

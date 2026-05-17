@@ -276,68 +276,191 @@ int _parseDuracionMin(String dur) {
   return (horas * 60).round();
 }
 
+/// Bloques logísticos fijos por momento del día para enriquecer cada día.
+const _bloquesManana = [
+  ('Desayuno en el hotel', 30, 0.0),
+  ('Desayuno en café local', 45, 15000.0),
+  ('Brunch en restaurante del barrio', 60, 25000.0),
+];
+const _bloquesTraslado = [
+  ('Traslado · Metro + caminata', 30, 0.0),
+  ('Traslado · Taxi al punto', 20, 12000.0),
+  ('Traslado · Uber al siguiente lugar', 25, 14000.0),
+];
+const _bloquesTarde = [
+  ('Tarde libre en el centro', 90, 0.0),
+  ('Compras y souvenirs del destino', 60, 20000.0),
+  ('Paseo por el barrio histórico', 75, 0.0),
+  ('Café y vista desde terraza', 50, 12000.0),
+];
+const _bloquesRelleno = [
+  ('Descanso en el hotel', 60, 0.0),
+  ('Mirador panorámico', 45, 0.0),
+  ('Foto en el punto icónico', 30, 0.0),
+  ('Snack típico del lugar', 30, 12000.0),
+];
+const _bloquesNoche = [
+  ('Cena en restaurante local', 75, 45000.0),
+  ('Noche en el parque principal', 60, 0.0),
+  ('Plan nocturno: bar o terraza', 90, 30000.0),
+];
+
 Itinerario _construirDesdeActividades({
   required List<ResumenActividad> actividades,
   required String nombre,
   required int diasViaje,
 }) {
   if (actividades.isEmpty) {
-    return Itinerario(
-      id: 7,
-      nombre: nombre,
-      presupuestoPromedioPersona: 0,
-      dias: [],
-    );
+    return Itinerario(id: 7, nombre: nombre, presupuestoPromedioPersona: 0, dias: []);
   }
 
-  // Distribuir actividades en días lo más parejo posible
-  final porDia = (actividades.length / diasViaje).ceil();
+  // Distribuir actividades principales de forma pareja entre los días
+  final porDia = (actividades.length / diasViaje).ceil().clamp(1, 3);
   final dias = <DiaItinerario>[];
-  final fechaBase = DateTime(2026, 6, 20); // demo trip 20 jun
+  final fechaBase = DateTime(2026, 6, 20);
 
   int actIdx = 0;
-  for (int d = 0; d < diasViaje && actIdx < actividades.length; d++) {
+  int itemId = 1;
+
+  for (int d = 0; d < diasViaje; d++) {
     final fecha = fechaBase.add(Duration(days: d));
-    var horaActual = DateTime(fecha.year, fecha.month, fecha.day, 9, 0);
-
+    var hora = DateTime(fecha.year, fecha.month, fecha.day, 8, 0);
     final items = <ItemItinerario>[];
-    final enEsteDia = porDia.clamp(1, actividades.length - actIdx);
 
+    // ── Bloque 1: Desayuno ────────────────────────────────────────
+    final desayuno = _bloquesManana[d % _bloquesManana.length];
+    final finDesayuno = hora.add(Duration(minutes: desayuno.$2));
+    items.add(ItemItinerario(
+      id: itemId++,
+      inicio: hora,
+      fin: finDesayuno,
+      estado: 'PROGRAMADA',
+      actividad: ActividadItinerario(
+        id: itemId + 200,
+        nombre: desayuno.$1,
+        descripcion: 'Bloque logístico',
+        costo: desayuno.$3,
+        duracion: desayuno.$2,
+        imagenes: [],
+      ),
+    ));
+    hora = finDesayuno.add(const Duration(minutes: 15));
+
+    // ── Actividades principales del día ───────────────────────────
+    final enEsteDia = (actIdx < actividades.length) ? porDia.clamp(1, actividades.length - actIdx) : 0;
     for (int k = 0; k < enEsteDia && actIdx < actividades.length; k++) {
       final act = actividades[actIdx];
       final durMin = _parseDuracionMin(act.duracion);
-      final fin = horaActual.add(Duration(minutes: durMin));
-
+      final fin = hora.add(Duration(minutes: durMin));
       items.add(ItemItinerario(
-        id: actIdx + 1,
-        inicio: horaActual,
+        id: itemId++,
+        inicio: hora,
         fin: fin,
         estado: 'PROGRAMADA',
         actividad: ActividadItinerario(
           id: actIdx + 101,
           nombre: act.nombre,
-          descripcion:
-              'Actividad seleccionada por el grupo para $nombre.',
+          descripcion: act.nombre,
           costo: _parsePrecioDouble(act.precio),
           duracion: durMin,
           imagenes: [],
         ),
       ));
-
-      // 45 min de margen entre actividades
-      horaActual = fin.add(const Duration(minutes: 45));
+      // Traslado siempre (entre actividades o hacia el siguiente bloque)
+      final traslado = _bloquesTraslado[(actIdx + k) % _bloquesTraslado.length];
+      final finTraslado = fin.add(Duration(minutes: traslado.$2));
+      items.add(ItemItinerario(
+        id: itemId++,
+        inicio: fin,
+        fin: finTraslado,
+        estado: 'PROGRAMADA',
+        actividad: ActividadItinerario(
+          id: itemId + 300,
+          nombre: traslado.$1,
+          descripcion: 'Bloque logístico',
+          costo: traslado.$3,
+          duracion: traslado.$2,
+          imagenes: [],
+        ),
+      ));
+      hora = finTraslado.add(const Duration(minutes: 10));
       actIdx++;
     }
 
-    if (items.isNotEmpty) {
-      dias.add(DiaItinerario(fecha: fecha, items: items));
+    // ── Bloque tarde libre (si hay espacio antes de las 19:00) ────
+    if (hora.hour < 16) {
+      final tarde = _bloquesTarde[d % _bloquesTarde.length];
+      final finTarde = hora.add(Duration(minutes: tarde.$2));
+      items.add(ItemItinerario(
+        id: itemId++,
+        inicio: hora,
+        fin: finTarde,
+        estado: 'PROGRAMADA',
+        actividad: ActividadItinerario(
+          id: itemId + 500,
+          nombre: tarde.$1,
+          descripcion: 'Bloque logístico',
+          costo: tarde.$3,
+          duracion: tarde.$2,
+          imagenes: [],
+        ),
+      ));
+      hora = finTarde.add(const Duration(minutes: 20));
     }
+
+    // ── Bloque final: Noche ───────────────────────────────────────
+    final nocheIdx = d % _bloquesNoche.length;
+    final noche = _bloquesNoche[nocheIdx];
+    if (hora.hour < 19) {
+      hora = DateTime(fecha.year, fecha.month, fecha.day, 19, 0);
+    }
+    final finNoche = hora.add(Duration(minutes: noche.$2));
+    final nocheItem = ItemItinerario(
+      id: itemId++,
+      inicio: hora,
+      fin: finNoche,
+      estado: 'PROGRAMADA',
+      actividad: ActividadItinerario(
+        id: itemId + 400,
+        nombre: noche.$1,
+        descripcion: 'Bloque logístico',
+        costo: noche.$3,
+        duracion: noche.$2,
+        imagenes: [],
+      ),
+    );
+    items.add(nocheItem);
+
+    // ── Garantía: mínimo 5 bloques por día ────────────────────────
+    // Si quedan < 5, insertamos rellenos ligeros justo antes de la noche.
+    int rellenoIdx = d;
+    while (items.length < 5) {
+      final r = _bloquesRelleno[rellenoIdx % _bloquesRelleno.length];
+      // Posicionar entre la penúltima (último item antes de la noche) y la noche.
+      final beforeIndex = items.length - 1; // índice de noche
+      final inicioRelleno = items[beforeIndex - 1].fin.add(const Duration(minutes: 10));
+      final finRelleno = inicioRelleno.add(Duration(minutes: r.$2));
+      items.insert(beforeIndex, ItemItinerario(
+        id: itemId++,
+        inicio: inicioRelleno,
+        fin: finRelleno,
+        estado: 'PROGRAMADA',
+        actividad: ActividadItinerario(
+          id: itemId + 600,
+          nombre: r.$1,
+          descripcion: 'Bloque logístico',
+          costo: r.$3,
+          duracion: r.$2,
+          imagenes: [],
+        ),
+      ));
+      rellenoIdx++;
+    }
+
+    dias.add(DiaItinerario(fecha: fecha, items: items));
   }
 
-  // Presupuesto promedio = suma de costos
-  final totalCosto = actividades
-      .map((a) => _parsePrecioDouble(a.precio))
-      .fold(0.0, (a, b) => a + b);
+  final totalCosto = actividades.map((a) => _parsePrecioDouble(a.precio)).fold(0.0, (a, b) => a + b);
 
   return Itinerario(
     id: 7,

@@ -8,6 +8,7 @@ import 'package:choco/features/actividades/models/actividad_exploracion.dart';
 import 'package:choco/features/actividades/services/actividades_catalogo_local.dart';
 import 'package:choco/features/actividades/services/exploracion_actividades_memoria.dart';
 import 'package:choco/features/gastos/models/gastos_models.dart';
+import 'package:choco/features/gastos/widgets/choco_illustration.dart';
 import 'package:flutter/material.dart';
 
 /// Argumentos para [ExplorarActividadesSwipeScreen] vía [Navigator.pushNamed].
@@ -252,10 +253,31 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(18, 0, 18, 8),
+                padding: const EdgeInsets.fromLTRB(18, 0, 18, 6),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── Frase guía de Choco ──────────────────────────────────
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(8, 7, 12, 7),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryDark.withValues(alpha: 0.07),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const ChocoIllustration(size: 28, borderRadius: 8),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Yo guardo tus gustos y luego los cruzo con el grupo.',
+                              style: AppFonts.body(12, color: AppColors.primaryDark.withValues(alpha: 0.85), height: 1.3),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -277,7 +299,7 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
                                 Icon(Icons.favorite_rounded, size: 12, color: AppColors.primaryDark),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '$_chocovotos',
+                                  '$_chocovotos intereses',
                                   style: AppFonts.label(11.5, weight: FontWeight.w800).copyWith(color: AppColors.primaryDark),
                                 ),
                               ],
@@ -285,7 +307,7 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
                           ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: LinearProgressIndicator(
@@ -294,17 +316,6 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
                         backgroundColor: AppColors.outlineSoft,
                         color: AppColors.primary,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      top == null
-                          ? '¡Exploraste todo!'
-                          : top.nombre.length > 28
-                              ? '${top.nombre.substring(0, 26)}…'
-                              : top.nombre,
-                      style: AppFonts.body(12, color: AppColors.text.withValues(alpha: 0.65)),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -367,55 +378,70 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 5),
+                            // ── Hint deslizamiento ───────────────────────────
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.swipe_left_rounded, size: 14, color: AppColors.text.withValues(alpha: 0.45)),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Paso',
-                                  style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.50)),
+                                Icon(Icons.arrow_back_ios_rounded, size: 11, color: AppColors.text.withValues(alpha: 0.35)),
+                                const SizedBox(width: 3),
+                                Text('Paso', style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.45))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: Container(
+                                    width: 4, height: 4,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.text.withValues(alpha: 0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
                                 ),
-                                Text(
-                                  '  ·  desliza  ·  ',
-                                  style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.35)),
-                                ),
-                                Text(
-                                  'Me interesa',
-                                  style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.50)),
-                                ),
-                                const SizedBox(width: 4),
-                                Icon(Icons.swipe_right_rounded, size: 14, color: AppColors.text.withValues(alpha: 0.45)),
+                                Text('Me interesa', style: AppFonts.body(11, color: AppColors.text.withValues(alpha: 0.45))),
+                                const SizedBox(width: 3),
+                                Icon(Icons.arrow_forward_ios_rounded, size: 11, color: AppColors.text.withValues(alpha: 0.35)),
                               ],
                             ),
                             const SizedBox(height: 8),
+                            // ── Botones principales ──────────────────────────
                             Row(
                               children: [
                                 Expanded(
-                                  child: OutlinedButton.icon(
+                                  child: OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 13),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      side: BorderSide(color: AppColors.text.withValues(alpha: 0.22)),
+                                      side: BorderSide(color: AppColors.text.withValues(alpha: 0.20)),
+                                      foregroundColor: AppColors.text.withValues(alpha: 0.75),
                                     ),
                                     onPressed: _paso,
-                                    icon: const Icon(Icons.close_rounded, size: 20),
-                                    label: Text('Paso', style: AppFonts.label(14, weight: FontWeight.w800)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.close_rounded, size: 18, color: AppColors.text.withValues(alpha: 0.60)),
+                                        const SizedBox(width: 6),
+                                        Text('Paso', style: AppFonts.label(14, weight: FontWeight.w700).copyWith(color: AppColors.text.withValues(alpha: 0.75))),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
-                                  child: FilledButton.icon(
+                                  child: FilledButton(
                                     style: FilledButton.styleFrom(
                                       backgroundColor: AppColors.primaryDark,
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 13),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                     ),
                                     onPressed: _meInteresa,
-                                    icon: const Icon(Icons.favorite_rounded, size: 20),
-                                    label: Text('Me interesa', style: AppFonts.label(14, weight: FontWeight.w800)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.favorite_rounded, size: 18, color: Colors.white),
+                                        const SizedBox(width: 6),
+                                        Text('Me interesa', style: AppFonts.label(14, weight: FontWeight.w800).copyWith(color: Colors.white)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -427,16 +453,14 @@ class _ExplorarActividadesSwipeScreenState extends State<ExplorarActividadesSwip
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 11),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                  side: BorderSide(color: AppColors.primary.withValues(alpha: 0.45)),
+                                  side: BorderSide(color: AppColors.primaryDark.withValues(alpha: 0.35)),
                                   foregroundColor: AppColors.primaryDark,
                                 ),
                                 onPressed: _irAEsperaGrupo,
-                                icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
+                                icon: Icon(Icons.check_circle_outline_rounded, size: 18, color: AppColors.primaryDark.withValues(alpha: 0.85)),
                                 label: Text(
-                                  widget.viajeId == '7'
-                                      ? 'Listo, ver estado del grupo'
-                                      : 'Terminar exploración por ahora',
-                                  style: AppFonts.label(13, weight: FontWeight.w700),
+                                  'Terminar exploración',
+                                  style: AppFonts.label(13, weight: FontWeight.w700).copyWith(color: AppColors.primaryDark),
                                 ),
                               ),
                             ),
@@ -505,7 +529,7 @@ class _FinLista extends StatelessWidget {
           Text('¡Buen ojo!', textAlign: TextAlign.center, style: AppFonts.title(20)),
           const SizedBox(height: 8),
           Text(
-            'Te interesaron $meInteresa planes. Más adelante podrás alinear esto con tu grupo en la mesa de Choco.',
+            'Guardé $meInteresa ${meInteresa == 1 ? "plan" : "planes"} de tu interés. Ahora el grupo puede cerrar el consenso.',
             textAlign: TextAlign.center,
             style: AppFonts.body(14, height: 1.45),
           ),
@@ -586,39 +610,41 @@ class _ActividadSwipeCard extends StatelessWidget {
               ),
               if (overlayLike)
                 Positioned(
-                  top: 26,
-                  left: 22,
-                  child: Transform.rotate(
-                    angle: -0.18,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.greenAccent.shade100, width: 3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'ME INTERESA',
-                        style: AppFonts.label(18, weight: FontWeight.w900).copyWith(color: Colors.greenAccent.shade100),
-                      ),
+                  top: 22,
+                  left: 18,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2E7D32).withValues(alpha: 0.88),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.favorite_rounded, size: 16, color: Colors.white),
+                        const SizedBox(width: 6),
+                        Text('Me interesa', style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white)),
+                      ],
                     ),
                   ),
                 ),
               if (overlayNope)
                 Positioned(
-                  top: 26,
-                  right: 22,
-                  child: Transform.rotate(
-                    angle: 0.18,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.redAccent.shade100, width: 3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'PASO',
-                        style: AppFonts.label(18, weight: FontWeight.w900).copyWith(color: Colors.redAccent.shade100),
-                      ),
+                  top: 22,
+                  right: 18,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC62828).withValues(alpha: 0.88),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.close_rounded, size: 16, color: Colors.white),
+                        const SizedBox(width: 6),
+                        Text('Paso', style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white)),
+                      ],
                     ),
                   ),
                 ),
@@ -646,14 +672,19 @@ class _ActividadSwipeCard extends StatelessWidget {
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 6,
-                      runSpacing: 6,
-                      children: actividad.tags.take(4).map((t) {
-                        return Chip(
-                          label: Text(_capitalizarEtiqueta(t), style: AppFonts.label(11, weight: FontWeight.w700)),
-                          visualDensity: VisualDensity.compact,
-                          backgroundColor: Colors.white.withValues(alpha: 0.16),
-                          side: BorderSide.none,
-                          labelStyle: const TextStyle(color: Colors.white),
+                      runSpacing: 5,
+                      children: actividad.tags.take(3).map((t) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.30)),
+                          ),
+                          child: Text(
+                            _capitalizarEtiqueta(t),
+                            style: AppFonts.label(10.5, weight: FontWeight.w700).copyWith(color: Colors.white),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -707,6 +738,140 @@ class _ActividadSwipeCard extends StatelessWidget {
   }
 }
 
+// ── Mapa simbólico / ruta referencial ──────────────────────────────────────
+class _MapaMockWidget extends StatelessWidget {
+  final ActividadExploracion actividad;
+
+  const _MapaMockWidget({required this.actividad});
+
+  @override
+  Widget build(BuildContext context) {
+    final modoTransporte = _modoMock(actividad.categoria);
+    final tiempo = _tiempoMock(actividad.categoria);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header del mapa
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+            child: Row(
+              children: [
+                Icon(Icons.alt_route_rounded, size: 16, color: AppColors.primaryDark),
+                const SizedBox(width: 8),
+                Text('Ruta sugerida por Choco', style: AppFonts.label(12, weight: FontWeight.w800).copyWith(color: AppColors.primaryDark)),
+              ],
+            ),
+          ),
+          // Ruta visual
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 14),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.75),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                _PuntoRuta(label: 'Tu hotel', icon: Icons.hotel_rounded, color: AppColors.accent),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(child: Container(height: 2, color: AppColors.primary.withValues(alpha: 0.3))),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(modoTransporte, size: 12, color: AppColors.primaryDark),
+                                const SizedBox(width: 4),
+                                Text(tiempo, style: AppFonts.label(11, weight: FontWeight.w700).copyWith(color: AppColors.primaryDark)),
+                              ],
+                            ),
+                          ),
+                          Expanded(child: Container(height: 2, color: AppColors.primary.withValues(alpha: 0.3))),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                _PuntoRuta(label: actividad.nombre, icon: Icons.place_rounded, color: AppColors.primaryDark),
+              ],
+            ),
+          ),
+          // Ubicación textual
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+            child: Text(
+              actividad.ubicacionTexto,
+              style: AppFonts.body(12, color: AppColors.text.withValues(alpha: 0.62)),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _modoMock(String categoria) {
+    final c = categoria.toLowerCase();
+    if (c.contains('acu') || c.contains('senderismo') || c.contains('eco')) {
+      return Icons.directions_walk_rounded;
+    } else if (c.contains('gastr') || c.contains('culin')) {
+      return Icons.directions_car_rounded;
+    }
+    return Icons.directions_bus_rounded;
+  }
+
+  String _tiempoMock(String categoria) {
+    final c = categoria.toLowerCase();
+    if (c.contains('eco') || c.contains('senderismo')) return '~35 min';
+    if (c.contains('gastr') || c.contains('culin')) return '~18 min';
+    return '~22 min';
+  }
+}
+
+class _PuntoRuta extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  const _PuntoRuta({required this.label, required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.12), border: Border.all(color: color, width: 1.5)),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        const SizedBox(height: 4),
+        SizedBox(
+          width: 64,
+          child: Text(label, style: AppFonts.body(10, color: AppColors.text.withValues(alpha: 0.7)), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Detalle de actividad (sheet) ───────────────────────────────────────────
 class _DetalleActividadSheet extends StatelessWidget {
   final ActividadExploracion actividad;
 
@@ -777,26 +942,8 @@ class _DetalleActividadSheet extends StatelessWidget {
                             _bloque('Accesibilidad', actividad.accesibilidadNota),
                             _bloque('Etiquetas', actividad.tags.join(', ')),
                             const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.08),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.outlineSoft),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.map_outlined, color: AppColors.primaryDark),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Mapa próximamente: Choco está preparando la ruta para que veas el punto en el mapa sin complicaciones.',
-                                      style: AppFonts.body(13, height: 1.4),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Mini mapa simbólico / ruta referencial
+                            _MapaMockWidget(actividad: actividad),
                             const SizedBox(height: 28),
                           ],
                         ),

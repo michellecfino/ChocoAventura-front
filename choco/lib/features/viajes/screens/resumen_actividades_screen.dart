@@ -1,5 +1,6 @@
 import 'package:choco/app/colors.dart';
 import 'package:choco/app/fonts.dart';
+import 'package:choco/features/gastos/widgets/choco_illustration.dart';
 import 'package:choco/features/itinerario/screens/ItinerarioScreen.dart';
 import 'package:choco/features/viajes/data/viajes_mock_data.dart';
 import 'package:flutter/material.dart';
@@ -45,9 +46,13 @@ class ResumenActividadesScreen extends StatelessWidget {
         ? kViajesMockRicos.where((v) => '${v.id}' == viajeId).firstOrNull
         : null;
     final dias = viaje != null ? 4 : diasViaje;
-    final porDia = actividadesElegidas.isNotEmpty
-        ? (actividadesElegidas.length / dias).ceil()
-        : 0;
+    final porDiaDouble = actividadesElegidas.isNotEmpty
+        ? actividadesElegidas.length / dias
+        : 0.0;
+    // Mostrar "~X por día" si es entero o "1-2 por día" si hay fracción
+    final porDia = porDiaDouble == porDiaDouble.roundToDouble()
+        ? porDiaDouble.round()
+        : 0; // 0 indica rango
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -76,16 +81,22 @@ class ResumenActividadesScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 5),
+                    padding: const EdgeInsets.fromLTRB(8, 5, 12, 5),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text(
-                      '✦ Plan listo',
-                      style: AppFonts.label(12, weight: FontWeight.w700)
-                          .copyWith(color: AppColors.primaryDark),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle_rounded, size: 13, color: AppColors.primaryDark),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Plan listo',
+                          style: AppFonts.label(12, weight: FontWeight.w700)
+                              .copyWith(color: AppColors.primaryDark),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -123,8 +134,7 @@ class ResumenActividadesScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.fromLTRB(10, 10, 14, 10),
                 decoration: BoxDecoration(
                   color: AppColors.creamLight,
                   borderRadius: BorderRadius.circular(14),
@@ -133,11 +143,11 @@ class ResumenActividadesScreen extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('🍫', style: TextStyle(fontSize: 18)),
-                    const SizedBox(width: 10),
+                    const ChocoIllustration(size: 36, borderRadius: 10),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Choco armó esta selección según el grupo, el swipe y tus prioridades.',
+                        'Armé esta selección con las coincidencias del grupo, los swipes y tus prioridades de categoría.',
                         style: AppFonts.body(13, height: 1.4),
                       ),
                     ),
@@ -257,12 +267,9 @@ class _ActividadResumenCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Text(
-                  actividad.categoria.isNotEmpty
-                      ? actividad.categoria
-                      : '✨',
-                  style: const TextStyle(fontSize: 20),
-                ),
+                child: actividad.categoria.isNotEmpty
+                    ? Text(actividad.categoria, style: const TextStyle(fontSize: 20))
+                    : Icon(Icons.star_rounded, size: 20, color: AppColors.primaryDark),
               ),
             ),
             const SizedBox(width: 12),
@@ -321,13 +328,23 @@ class _ActividadResumenCard extends StatelessWidget {
 class _StatsResumen extends StatelessWidget {
   final int totalActividades;
   final int diasViaje;
-  final int porDia;
+  final int porDia; // 0 = mostrar rango
 
   const _StatsResumen({
     required this.totalActividades,
     required this.diasViaje,
     required this.porDia,
   });
+
+  String get _porDiaLabel {
+    if (porDia == 0) {
+      // Calcular rango real
+      final min = totalActividades ~/ diasViaje;
+      final max = (totalActividades / diasViaje).ceil();
+      return min == max ? '~$min' : '$min–$max';
+    }
+    return '~$porDia';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -345,7 +362,7 @@ class _StatsResumen extends StatelessWidget {
           _Divider(),
           _StatItem(valor: '$diasViaje', etiqueta: 'días'),
           _Divider(),
-          _StatItem(valor: '~$porDia', etiqueta: 'por día'),
+          _StatItem(valor: _porDiaLabel, etiqueta: 'por día'),
         ],
       ),
     );

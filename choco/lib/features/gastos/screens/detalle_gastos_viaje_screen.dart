@@ -74,43 +74,23 @@ class _DetalleGastosViajeScreenState extends State<DetalleGastosViajeScreen> {
         title: Text('Gastos del viaje', style: AppFonts.title(15)),
         centerTitle: true,
       ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'det_voz',
-            backgroundColor: AppColors.primaryDark,
-            foregroundColor: Colors.white,
-            onPressed: () => mostrarRegistrarGastoSheet(
-              context,
-              viajePrefijado: widget.resumen,
-              service: widget.service,
-              alGuardar: _refrescar,
-              initialTab: 1,
-            ),
-            child: const Icon(Icons.mic_rounded, size: 20),
-          ),
-          const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'det_manual',
-            onPressed: () => mostrarRegistrarGastoSheet(
-              context,
-              viajePrefijado: widget.resumen,
-              service: widget.service,
-              alGuardar: _refrescar,
-              initialTab: 0,
-            ),
-            backgroundColor: AppColors.primaryDark,
-            foregroundColor: Colors.white,
-            elevation: 4,
-            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
-            label: Text(
-              '+ Gasto',
-              style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
-            ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'det_manual',
+        onPressed: () => mostrarRegistrarGastoSheet(
+          context,
+          viajePrefijado: widget.resumen,
+          service: widget.service,
+          alGuardar: _refrescar,
+          initialTab: 0,
+        ),
+        backgroundColor: AppColors.primaryDark,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.add_rounded, size: 20, color: Colors.white),
+        label: Text(
+          'Gasto',
+          style: AppFonts.label(13, weight: FontWeight.w800).copyWith(color: Colors.white),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: FutureBuilder<DetalleFinancieroViaje>(
@@ -650,7 +630,7 @@ class _ResumenVisual extends StatelessWidget {
                   value: prog,
                   minHeight: 11,
                   backgroundColor: AppColors.creamLight,
-                  color: AppColors.primaryDark,
+                  color: prog > 0.85 ? AppColors.owe : AppColors.accent,
                 ),
               ),
             ],
@@ -660,56 +640,86 @@ class _ResumenVisual extends StatelessWidget {
         Text('Por categoría', style: AppFonts.title(15)),
         const SizedBox(height: 8),
         if (totalCat > 0)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 132,
-                height: 132,
-                child: CustomPaint(
-                  painter: _DonutCategoriasPainter(
-                    fractions: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceElevated,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Donut
+                SizedBox(
+                  width: 116,
+                  height: 116,
+                  child: CustomPaint(
+                    painter: _DonutCategoriasPainter(
+                      fractions: [
+                        for (var i = 0; i < orden.length; i++)
+                          if (valores[i] > 0) valores[i] / totalCat,
+                      ],
+                      colors: [
+                        for (var i = 0; i < orden.length; i++)
+                          if (valores[i] > 0) palette[i % palette.length],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Lista con barras
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       for (var i = 0; i < orden.length; i++)
-                        if (valores[i] > 0) valores[i] / totalCat,
-                    ],
-                    colors: [
-                      for (var i = 0; i < orden.length; i++)
-                        if (valores[i] > 0) palette[i % palette.length],
+                        if (valores[i] > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 9),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 9,
+                                      height: 9,
+                                      decoration: BoxDecoration(
+                                        color: palette[i % palette.length],
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Expanded(
+                                      child: Text(orden[i], style: AppFonts.label(12, weight: FontWeight.w700)),
+                                    ),
+                                    Text(
+                                      formatoCop(valores[i]),
+                                      style: AppFonts.amount(11.5).copyWith(
+                                        color: AppColors.text.withValues(alpha: 0.85),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: totalCat > 0 ? valores[i] / totalCat : 0,
+                                    minHeight: 5,
+                                    backgroundColor: AppColors.creamLight,
+                                    color: palette[i % palette.length],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < orden.length; i++)
-                      if (valores[i] > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: palette[i % palette.length],
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(orden[i], style: AppFonts.label(12, weight: FontWeight.w700)),
-                              ),
-                              Text(formatoCop(valores[i]), style: AppFonts.amount(12)),
-                            ],
-                          ),
-                        ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           )
         else
           Text(

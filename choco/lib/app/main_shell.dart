@@ -72,6 +72,9 @@ class MainShellState extends State<MainShell> with SingleTickerProviderStateMixi
     );
   }
 
+  /// Abre el asistente Choco desde cualquier pantalla hija.
+  void abrirChoco() => _openChocoAsistente();
+
   void _onNavTap(int slot) {
     if (slot == 2) {
       _openChocoAsistente();
@@ -251,7 +254,7 @@ class _DockItem extends StatelessWidget {
                       size: 22,
                       color: selected
                           ? AppColors.primaryDark
-                          : AppColors.text.withValues(alpha: 0.38),
+                          : AppColors.text.withValues(alpha: 0.55),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -259,10 +262,10 @@ class _DockItem extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppFonts.label(10.5, weight: selected ? FontWeight.w800 : FontWeight.w500).copyWith(
+                    style: AppFonts.label(10.5, weight: selected ? FontWeight.w800 : FontWeight.w600).copyWith(
                       color: selected
                           ? AppColors.primaryDark
-                          : AppColors.text.withValues(alpha: 0.42),
+                          : AppColors.text.withValues(alpha: 0.58),
                     ),
                   ),
                 ],
@@ -295,16 +298,16 @@ class _ChocoDockButton extends StatelessWidget {
             child: ScaleTransition(
               scale: scale,
                   child: Container(
-                width: 58,
-                height: 58,
+                width: 62,
+                height: 62,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.creamLight,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.28),
+                      color: Colors.black.withValues(alpha: 0.13),
                       blurRadius: 14,
-                      offset: const Offset(0, 5),
+                      offset: const Offset(0, 4),
                     ),
                     BoxShadow(
                       color: Colors.white.withValues(alpha: 0.85),
@@ -313,26 +316,27 @@ class _ChocoDockButton extends StatelessWidget {
                     ),
                   ],
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.38),
-                    width: 2.0,
+                    color: AppColors.text.withValues(alpha: 0.12),
+                    width: 1.5,
                   ),
                 ),
                 child: Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
-                    const ChocoNavLogo(size: 46, fit: BoxFit.contain),
+                    const ChocoNavLogo(size: 50, fit: BoxFit.contain),
                     Positioned(
-                      right: -1,
-                      bottom: -1,
+                      right: 1,
+                      bottom: 1,
                       child: Container(
-                        padding: const EdgeInsets.all(3),
+                        width: 18,
+                        height: 18,
                         decoration: BoxDecoration(
                           color: AppColors.accent,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 1.5),
                         ),
-                        child: const Icon(Icons.mic_rounded, size: 10, color: Colors.white),
+                        child: const Icon(Icons.mic_rounded, size: 11, color: Colors.white),
                       ),
                     ),
                   ],
