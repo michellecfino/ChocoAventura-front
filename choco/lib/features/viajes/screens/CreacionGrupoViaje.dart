@@ -13,6 +13,11 @@ class CreacionGrupoViaje extends StatefulWidget {
 class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
   final _formKey = GlobalKey<FormState>();
 
+  bool get _mapsActivos {
+    final clave = dotenv.maybeGet('GOOGLE_MAPS_API_KEY');
+    return clave != null && clave.trim().isNotEmpty;
+  }
+
   //  Datos
   String? nombre;
   String? descripcion;
@@ -77,35 +82,70 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
 
             const SizedBox(height: 16),
 
-            //  CIUDAD (GOOGLE)
-            GooglePlaceAutoCompleteTextField(
-              textEditingController: ciudadController,
-              googleAPIKey: dotenv.get('GOOGLE_MAPS_API_KEY'),
+            if (_mapsActivos) ...[
+              GooglePlaceAutoCompleteTextField(
+                textEditingController: ciudadController,
+                googleAPIKey: dotenv.maybeGet('GOOGLE_MAPS_API_KEY') ?? '',
 
-              inputDecoration: const InputDecoration(
-                hintText: "Buscar ciudad",
-                border: OutlineInputBorder(),
+                inputDecoration: const InputDecoration(
+                  hintText: "Buscar ciudad",
+                  border: OutlineInputBorder(),
+                ),
+
+                debounceTime: 800,
+                isLatLngRequired: true,
+
+                getPlaceDetailWithLatLng: (prediction) {
+                  lat = double.tryParse(prediction.lat ?? "");
+                  lng = double.tryParse(prediction.lng ?? "");
+                },
+
+                itemClick: (prediction) {
+                  ciudadController.text = prediction.description ?? "";
+
+                  final partes = (prediction.description ?? "").split(",");
+
+                  ciudad = partes.first.trim();
+                  pais = partes.last.trim();
+
+                  setState(() {});
+                },
               ),
-
-              debounceTime: 800,
-              isLatLngRequired: true,
-
-              getPlaceDetailWithLatLng: (prediction) {
-                lat = double.tryParse(prediction.lat ?? "");
-                lng = double.tryParse(prediction.lng ?? "");
-              },
-
-              itemClick: (prediction) {
-                ciudadController.text = prediction.description ?? "";
-
-                final partes = (prediction.description ?? "").split(",");
-
-                ciudad = partes.first.trim();
-                pais = partes.last.trim();
-
-                setState(() {});
-              },
-            ),
+            ] else ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: const Text(
+                  'Mapa desactivado temporalmente. Por ahora estamos preparando esta sección sin Google Maps.\n'
+                  'Escribe ciudad y país manualmente.',
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Ciudad',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v == null || v.isEmpty ? 'Indica la ciudad' : null,
+                onSaved: (v) => ciudad = v?.trim(),
+                onChanged: (v) => ciudad = v.trim(),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'País',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v == null || v.isEmpty ? 'Indica el país' : null,
+                onSaved: (v) => pais = v?.trim(),
+                onChanged: (v) => pais = v.trim(),
+              ),
+            ],
 
             const SizedBox(height: 8),
 
@@ -275,19 +315,7 @@ class _CreacionGrupoViajeState extends State<CreacionGrupoViaje> {
                 print(fechaFinCompleta);
                 print(horaAlmuerzo);
 
-                final dto = {
-                  "nombre": nombre,
-                  "descripcion": descripcion,
-                  "nombreCiudad": ciudad,
-                  "paisCiudad": pais,
-                  "latCiudad": lat,
-                  "lngCiudad": lng,
-                  "fechaInicio": fechaInicioCompleta.toIso8601String(),
-                  "fechaFin": fechaFinCompleta.toIso8601String(),
-                  "horaAlmuerzo": horaAlmuerzo!.format(context),
-                  "horaInicioActividades": horaInicio!.format(context),
-                  "tiempoParaAlmorzar": tiempoAlmuerzo,
-                };
+                // Payload listo para integrar con POST crear grupo (nombre, ciudad, fechas, horarios…)
                 // Aqui se llama al back
               },
               child: const Text("Crear Grupo"),

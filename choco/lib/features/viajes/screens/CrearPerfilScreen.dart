@@ -1,5 +1,4 @@
 import 'package:choco/app/colors.dart';
-import 'package:choco/core/mock/categoria_mock.dart';
 import 'package:choco/features/viajes/models/UnirseGrupoDTO.dart';
 import 'package:choco/features/viajes/models/categoria.dart';
 import 'package:choco/features/viajes/services/viajes_service.dart';
@@ -35,7 +34,7 @@ class _CrearPerfilScreenState extends State<CrearPerfilScreen> {
   @override
   void initState() {
     super.initState();
-    futureCategorias = Future.value(CategoriaMock.getCategorias()); //ViajesService().getCategorias();
+    futureCategorias = ViajesService().getCategorias();
   }
     void enviar() async {
     if (presupuestoController.text.isEmpty) {

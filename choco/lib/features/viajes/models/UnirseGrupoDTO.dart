@@ -1,22 +1,26 @@
 class UnirseGrupoDTO {
   final int usuarioId;
-  final int grupoId;
+  final int? grupoId;
+  final String? codigoInvitacion;
   final List<int> categoriasIds;
   final double presupuesto;
   final int personasACargo;
 
-  UnirseGrupoDTO({
+  const UnirseGrupoDTO({
     required this.usuarioId,
-    required this.grupoId,
+    this.grupoId,
+    this.codigoInvitacion,
     required this.categoriasIds,
     required this.presupuesto,
-    required this.personasACargo,
+    this.personasACargo = 1,
   });
 
   Map<String, dynamic> toJson() {
     return {
       "usuarioId": usuarioId,
-      "grupoId": grupoId,
+      if (grupoId != null) "grupoId": grupoId,
+      if (codigoInvitacion != null && codigoInvitacion!.trim().isNotEmpty)
+        "codigoInvitacion": codigoInvitacion!.trim(),
       "categoriasIds": categoriasIds,
       "presupuesto": presupuesto,
       "personasACargo": personasACargo,
